@@ -1,8 +1,9 @@
 # Week 1 – Reverse Engineering
 
 ## The Artifact
-Describe or embed your artifact here.
-Include images, links, or media as appropriate.
+![Portrait on campus](../images/week01-portrait.png)
+
+*A portrait photograph taken on campus*
 
 ## Process Notes
 How did you make this?
