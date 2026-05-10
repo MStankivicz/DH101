@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675">
+  <rect width="100%" height="100%" fill="#ffffff" stroke="#cccccc"/>
+  <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#333">Voyant Tools screenshot placeholder</text>
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#666">Replace this file with your actual screenshot named `week05-voyant.png`</text>
+</svg>
