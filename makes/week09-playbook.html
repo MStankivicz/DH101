@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Playbook — An Interactive Story</title>
+  <style>
+    :root {
+      --green: #1a3d2b;
+      --green-light: #2e6b48;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --cream: #f5f0e8;
+      --dark: #0f1f17;
+      --text: #e8e0d0;
+      --text-dim: #a09880;
+      --choice-bg: #162e20;
+      --choice-hover: #1e4530;
+      --choice-border: #2e6b48;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--dark);
+      color: var(--text);
+      font-family: 'Georgia', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      background: var(--green);
+      border-bottom: 3px solid var(--gold);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .title-block h1 {
+      font-size: 1.4rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .title-block p {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: 'Courier New', monospace;
+      margin-top: 2px;
+      letter-spacing: 0.05em;
+    }
+    .progress-block {
+      text-align: right;
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+    .progress-bar-wrap {
+      width: 140px;
+      height: 4px;
+      background: var(--green-light);
+      border-radius: 2px;
+      margin-top: 6px;
+      margin-left: auto;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── Game container ── */
+    #game {
+      width: 100%;
+      max-width: 720px;
+      padding: 48px 32px 80px;
+      flex: 1;
+    }
+
+    /* ── Scene label ── */
+    .scene-label {
+      font-family: 'Courier New', monospace;
+      font-size: 0.68rem;
+      color: var(--gold);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      opacity: 0.85;
+    }
+
+    /* ── Story text ── */
+    .story-text {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--text);
+      animation: fadeIn 0.6s ease;
+    }
+    .story-text p { margin-bottom: 1.1em; }
+    .story-text em { color: var(--gold-light); font-style: italic; }
+    .story-text strong { color: var(--cream); }
+    .aria-voice {
+      display: block;
+      background: rgba(46, 107, 72, 0.2);
+      border-left: 3px solid var(--gold);
+      padding: 10px 16px;
+      margin: 14px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.88rem;
+      color: var(--gold-light);
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* ── Choices ── */
+    .choices {
+      margin-top: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: fadeIn 0.7s ease 0.2s both;
+    }
+    .choice-prompt {
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .choice-btn {
+      background: var(--choice-bg);
+      border: 1px solid var(--choice-border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Georgia', serif;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      padding: 14px 20px;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+      position: relative;
+    }
+    .choice-btn::before {
+      content: '▶';
+      color: var(--gold);
+      font-size: 0.65rem;
+      margin-right: 10px;
+      opacity: 0.7;
+    }
+    .choice-btn:hover {
+      background: var(--choice-hover);
+      border-color: var(--gold);
+      transform: translateX(3px);
+    }
+    .choice-btn:active { transform: translateX(1px); }
+
+    /* ── Continue button ── */
+    .continue-btn {
+      display: inline-block;
+      margin-top: 28px;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .continue-btn:hover {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    /* ── Ending card ── */
+    .ending-card {
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 28px 24px;
+      margin-top: 32px;
+      background: rgba(201, 168, 76, 0.06);
+    }
+    .ending-label {
+      font-family: 'Courier New', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .ending-title {
+      font-size: 1.3rem;
+      color: var(--gold-light);
+      margin-bottom: 12px;
+    }
+    .ending-subtext {
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+    .restart-btn {
+      margin-top: 24px;
+      background: transparent;
+      border: 1px solid var(--green-light);
+      color: var(--text-dim);
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 9px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .restart-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--green-light);
+      margin: 28px 0;
+      opacity: 0.5;
+    }
+
+    /* ── Footer ── */
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      border-top: 1px solid var(--green-light);
+      opacity: 0.6;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Score indicator (hidden, just for tracking) */
+    #score-debug { display: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="title-block">
+    <h1>The Playbook</h1>
+    <p>An interactive story about football, AI, and the calls we make</p>
+  </div>
+  <div class="progress-block">
+    <span id="progress-label">PASSAGE 1</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-bar" style="width: 8%"></div>
+    </div>
+  </div>
+</header>
+
+<div id="game">
+  <div class="scene-label" id="scene-label">PREGAME</div>
+  <div class="story-text" id="story-text"></div>
+  <div class="choices" id="choices-container"></div>
+</div>
+
+<footer>Make 10: Games &amp; Play &nbsp;·&nbsp; Interactive Narrative &nbsp;·&nbsp; Twine-style HTML Export</footer>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let score = 0;           // accumulates based on choices
+let teamCommit = false;  // set true if player rallies the team in team_moment
+let passageCount = 0;
+const TOTAL_PASSAGES = 12;
+
+// ─── Passage Data ─────────────────────────────────────────────────────────────
+const passages = {
+
+  // ══════════════════════════════════════════════════════════
+  start: {
+    label: 'PREGAME · RIDGECREST STADIUM',
+    progress: 8,
+    text: `
+      <p>The locker room smells like Ben-Gay and anxiety. You are <strong>Jordan Rivera</strong> — walk-on quarterback, third-string all of last season, somehow starting tonight against Westfield. You've replayed this moment ten thousand times in your head. Never quite like this.</p>
+      <p>Coach Harris finds you before the rest of the team files in. He's holding his tablet like it might bite him.</p>
+      <p>"Rivera. Got something to show you." He turns the screen toward you. "University brought this in at the start of the season. ARIA — Athletic Real-time Intelligence Assistant. It's been analyzing Westfield's last six games."</p>
+      <span class="aria-voice">ARIA: "Hello, Jordan. I've been looking forward to working with you."</span>
+      <p>TJ, your center — best friend since sophomore year — drifts over. He looks at the tablet the way he looks at blitz packages: with professional suspicion. <em>"It's a computer, man. Don't let it in your head."</em></p>
+      <p>Dre, your wide receiver, leans against his locker and grins. "Coach had me run routes with ARIA's suggestions all week. Honestly? My timing's never been better."</p>
+      <p>Coach Harris gives you the look that means: <em>this is your call, kid.</em></p>
+    `,
+    choices: [
+      { text: '"Tell me what you found." — You take the tablet.', next: 'meet_aria', delta: 1 },
+      { text: '"I appreciate it, Coach. But I want to trust what I know." — You set it aside.', next: 'skip_aria', delta: -1 },
+      { text: '"Can we use the data and still make our own reads?" — You look for middle ground.', next: 'find_balance', delta: 0 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  meet_aria: {
+    label: 'PREGAME · MEETING ARIA',
+    progress: 18,
+    text: `
+      <p>You take the tablet. The interface is clean — a simple waveform that pulses when ARIA speaks.</p>
+      <span class="aria-voice">ARIA: "Westfield's linebacker, number 54, cheats toward the boundary on play-action in 71% of their third-down sets. Their free safety rotates late on crossing routes — there's a window, roughly 1.8 seconds, past twelve yards. And their defensive end drops into zone when the corner shades inside. That's your running lane."</span>
+      <p>You process this. It's a lot. But it's specific. Real.</p>
+      <p>"Do you know <em>why</em> they do it that way?" you ask.</p>
+      <p>A pause — longer than you expected from a computer.</p>
+      <span class="aria-voice">ARIA: "No. I can see what happens. I can't tell you what they feel in the moment — what instinct they're following. That part belongs to you."</span>
+      <p>Something about that honesty stays with you.</p>
+    `,
+    choices: [
+      { text: '"Let\'s build the game plan around this. I want ARIA in my ear tonight."', next: 'film_session_open', delta: 1 },
+      { text: '"Good to know. I\'ll hold it loosely — use it when it fits."', next: 'film_session_cautious', delta: 0 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  skip_aria: {
+    label: 'PREGAME · OLD SCHOOL',
+    progress: 18,
+    text: `
+      <p>You hand the tablet back. Coach Harris nods — he respects that.</p>
+      <p>You find TJ stretching near his locker. "Walk me through their front seven. What are you seeing?"</p>
+      <p>TJ's face lights up. This is his language. For twenty minutes, it's just the two of you, a whiteboard, and years of trust. You diagram their tendencies from memory. You talk about feel, about reads, about the exact moment the pocket starts to close.</p>
+      <p>Walking out to warmups, you feel grounded. <em>Like yourself.</em></p>
+      <p>But partway through stretch, Dre jogs over. "Hey — did Coach show you the thing about their linebacker? The 71% tendency?"</p>
+      <p>You stop. You hadn't heard that part.</p>
+      <p>"ARIA flagged it," Dre says. "I didn't even ask."</p>
+      <p>Maybe you can ignore ARIA. Or maybe you're already using it — whether you want to or not.</p>
+    `,
+    choices: [
+      { text: 'Head into film session. You\'ll take what\'s useful and leave the rest.', next: 'film_session_cautious', delta: -1 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  find_balance: {
+    label: 'PREGAME · FINDING A THIRD WAY',
+    progress: 18,
+    text: `
+      <p>Coach Harris actually smiles. It's rare. "That's exactly what I was hoping to hear."</p>
+      <span class="aria-voice">ARIA: "That works well for me, too. I can offer patterns. You provide the context I'm not equipped to see."</span>
+      <p>TJ still looks skeptical. Dre pumps his fist. You feel something click into place.</p>
+      <p>"How does it work in practice?" you ask.</p>
+      <span class="aria-voice">ARIA: "I flag tendencies. You decide what to act on. If you see something I don't account for, trust yourself. I'm one input — not the playbook."</span>
+      <p>You look at TJ. He shrugs — the highest possible endorsement. <em>"I can work with that."</em></p>
+    `,
+    choices: [
+      { text: 'Head into film session together.', next: 'film_session_collab', delta: 1 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  film_session_open: {
+    label: 'FILM ROOM · ONE HOUR TO KICKOFF',
+    progress: 32,
+    text: `
+      <p>The film room is quiet except for ARIA's narration and the soft squeak of Coach's marker. You watch Westfield's defense like you're reading a language you're starting to understand.</p>
+      <p>Halfway through, Dre raises his hand. "Their corner has a tell — shoulder dip before he drops into zone. ARIA, did you catch that?"</p>
+      <span class="aria-voice">ARIA: "I didn't flag it. I don't have reliable data on micro-movements without additional tracking. But if you're seeing it consistently, it's worth acting on."</span>
+      <p>You look at Dre. He's sure. That matters.</p>
+    `,
+    choices: [
+      { text: '"Dre\'s read goes in the plan alongside ARIA\'s data. Both count."', next: 'first_drive', delta: 1 },
+      { text: '"Let\'s stay with what ARIA confirmed. Stick to known tendencies."', next: 'first_drive', delta: 0 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  film_session_cautious: {
+    label: 'FILM ROOM · ONE HOUR TO KICKOFF',
+    progress: 32,
+    text: `
+      <p>You sit in the back. You take what's useful and set aside the rest.</p>
+      <p>Midway through the reel, ARIA quietly highlights a clip: Westfield's linebacker, mid-play, cheating hard to the boundary — exactly as predicted. You watch it three times.</p>
+      <p>You write something in your notebook that has nothing to do with algorithms.</p>
+      <p><em>Trust what you see. Check it twice.</em></p>
+      <p>That's always been your philosophy. ARIA just handed you evidence that it works.</p>
+    `,
+    choices: [
+      { text: 'Head to warmups. You know what you need to know.', next: 'first_drive', delta: 0 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  film_session_collab: {
+    label: 'FILM ROOM · ONE HOUR TO KICKOFF',
+    progress: 32,
+    text: `
+      <p>The session has a rhythm you didn't expect. ARIA offers a tendency; the room tests it. Dre pushes back on one — "That sample size is two plays." ARIA agrees without hesitation:</p>
+      <span class="aria-voice">ARIA: "Fair. Treat that one as a lower-confidence flag."</span>
+      <p>TJ doesn't say much. But before you leave he pulls you aside. <em>"Alright. I don't hate it."</em></p>
+      <p>From TJ, that's a standing ovation.</p>
+    `,
+    choices: [
+      { text: 'Head to warmups. You\'re ready.', next: 'first_drive', delta: 1 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  first_drive: {
+    label: 'FIRST QUARTER · FIRST POSSESSION',
+    progress: 46,
+    text: `
+      <p>The stadium is loud in a way that rewires your nervous system. Sixty-two thousand people. The smell of turf and October air. This is it.</p>
+      <p>First series. You break the huddle. Westfield's defense looks like a wall.</p>
+      <p>ARIA's voice, through the small earpiece Coach fitted you with, is calm:</p>
+      <span class="aria-voice">ARIA: "Slant right, 12 yards. Corner's shading outside. Window should be there on a count of three."</span>
+      <p>Your gut says something different. You see the linebacker. He hasn't cheated yet — but his weight is shifting.</p>
+    `,
+    choices: [
+      { text: '"Follow ARIA\'s slant recommendation." You trust the data.', next: 'halftime', delta: 1 },
+      { text: '"Audible. Draw on the linebacker\'s tell." You trust your read.', next: 'halftime', delta: -1 },
+      { text: '"Quick hand signal to Dre at the line — let him confirm before you decide."', next: 'halftime', delta: 1 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  halftime: {
+    label: 'HALFTIME · LOCKER ROOM',
+    progress: 60,
+    text: `
+      <p>Down 7. The locker room has that specific kind of quiet — not defeat, just recalibration.</p>
+      <p>You've had flashes tonight. Real ones. But you've also left points on the field, second-guessing yourself at the line. The gap between what ARIA says and what your body reads hasn't always been comfortable to live in.</p>
+      <p>Coach pulls up ARIA's revised second-half plan. It's detailed. Thorough. A full reanalysis of Westfield's halftime adjustments.</p>
+      <span class="aria-voice">ARIA: "They'll likely rotate coverage on crossing routes now. The space shifts to the boundary. Your legs become a bigger asset."</span>
+      <p>Your hands are cold. The team is watching you. <em>This is still your call.</em></p>
+    `,
+    choices: [
+      { text: '"ARIA\'s right. Let\'s run the revised plan — full confidence."', next: 'team_moment', delta: 1 },
+      { text: '"Let\'s use ARIA\'s data but build the second-half plan together as a team."', next: 'team_moment', delta: 1 },
+      { text: '"I want to hear from the guys first. ARIA can inform us — we\'ll decide."', next: 'team_moment', delta: 0 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  team_moment: {
+    label: 'HALFTIME · THE REAL CONVERSATION',
+    progress: 70,
+    text: `
+      <p>TJ sits next to you on the bench. Doesn't say anything for a moment. Then:</p>
+      <p><em>"I need to know whose calls we're making out there."</em></p>
+      <p>It's not an accusation. It's real.</p>
+      <p>"What do you mean?"</p>
+      <p>"ARIA suggests a play. You run it. We execute it. If it goes wrong — who owns that? Not the computer. <em>Us.</em>" He looks at his hands. "I'm not saying don't use it. I'm saying I need to know you're still the quarterback."</p>
+      <p>The team is listening. Even Dre, who's believed in ARIA all along, is quiet.</p>
+      <p>This is the real question of the night. Not the score. Not the coverage shells. <em>This.</em></p>
+    `,
+    choices: [
+      { text: '"I hear you. From here on — ARIA is a tool. I\'m making the calls." You own it.', next: 'final_drive', delta: 1, commit: true },
+      { text: '"You\'re right. Let\'s all talk — together — about how we want to use it." You open the floor.', next: 'final_drive', delta: 2, commit: true },
+      { text: '"ARIA\'s given us real advantages. Let\'s trust the system." You hold the line.', next: 'final_drive', delta: 0, commit: false },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  final_drive: {
+    label: 'FOURTH QUARTER · 2:14 REMAINING',
+    progress: 82,
+    text: `
+      <p>Down 3. The stadium has reached a frequency that lives in your sternum.</p>
+      <p>Ball on their 31. Fourth and two. Season on the line.</p>
+      <p>You look at your team in the huddle. TJ. Dre. Eleven guys who have been running toward this moment their whole lives.</p>
+      <p>ARIA's voice in your ear:</p>
+      <span class="aria-voice">ARIA: "QB sneak. Short-yardage tendency — 78% success rate in this formation for rushing plays under 3 yards. The nose guard has been playing soft all half."</span>
+      <p>You look up. Something's off. Number 54 — the linebacker — isn't cheating. He's dead-square. Which means the slant lane Dre's been reading all night might actually be <em>open.</em></p>
+      <p>Dre catches your eye from the slot. He saw it too.</p>
+      <p>The clock is running.</p>
+    `,
+    choices: [
+      { text: '"QB sneak. Trust the percentage." You go with ARIA.', next: 'ending_collaboration', delta: 0 },
+      { text: '"Audible to Dre. The linebacker gave it away." You trust your read.', next: 'ending_instinct', delta: 0 },
+      { text: '"Timeout — I\'m bringing everyone in. We decide this together."', next: 'ending_team', delta: 0 },
+    ]
+  },
+
+  // ══════════════════════════════════════════════════════════
+  ending_collaboration: {
+    label: 'FINAL SCORE · RIDGECREST 24, WESTFIELD 20',
+    progress: 100,
+    isEnding: true,
+    endingTag: 'THE ALGORITHM AND THE QUARTERBACK',
+    endingNote: 'You used data as a lens, not a script — and found that good decisions sometimes need both the pattern and the person reading it.',
+    text: `
+      <p>You go under center. TJ pushes forward like a wall of pure intention. The hole opens — barely — and you fall forward, spinning your body toward the first-down marker.</p>
+      <p>You watch the chain crew. You watch the referee. You watch TJ.</p>
+      <p>The referee raises both arms. <em>First down.</em></p>
+      <p>The stadium detonates. Three plays later, you score.</p>
+      <hr class="divider" />
+      <p>After the game, you sit on the bench longer than everyone else. The stadium empties slowly around you.</p>
+      <span class="aria-voice">ARIA: "Your third-quarter adjustments improved your completion rate by 18%. You used the data well."</span>
+      <p>"You helped," you say.</p>
+      <span class="aria-voice">ARIA: "You made the decisions."</span>
+      <p>You pull the earpiece out. Hold it in your palm.</p>
+      <p>This season has been the strangest negotiation of your life — between what you know in your body and what a machine can see that you can't. Between pattern and instinct. Between trust and verification.</p>
+      <p>You don't think ARIA replaced anything. You think it changed the shape of the question. And that's not a loss.</p>
+      <p><em>Somewhere, a computer is already analyzing next week's film. You're glad it is.</em></p>
+    `
+  },
+
+  // ══════════════════════════════════════════════════════════
+  ending_instinct: {
+    label: 'FINAL SCORE · RIDGECREST 24, WESTFIELD 20',
+    progress: 100,
+    isEnding: true,
+    endingTag: 'WHAT YOU KNEW ALL ALONG',
+    endingNote: 'You learned that data is a tool — and instinct is something you\'ve been building your whole life.',
+    text: `
+      <p>You gesture at Dre. He nods — fast, certain.</p>
+      <p>"Hut."</p>
+      <p>The snap is clean. The linebacker hesitates a half-second, reading your eyes. That half-second is everything. Dre runs a slant into the gap that shouldn't exist. You throw before he's even open — the way you've thrown to him ten thousand times in practice.</p>
+      <p>He catches it. Seven yards. <em>First down.</em></p>
+      <p>The noise that follows is physical. TJ finds you in the chaos and grabs your facemask. He doesn't say anything. He doesn't need to.</p>
+      <hr class="divider" />
+      <p>The locker room afterward is controlled chaos. TJ is crying, which he will deny forever. Dre is on the phone with his mom.</p>
+      <p>You find a quiet corner and think about that last play. The way the linebacker's stance told you everything. The way your body knew before your mind caught up.</p>
+      <p>You used ARIA tonight. Its data was real, and it helped. But on the play that mattered most, you were reading ten thousand hours of football — not a percentage. No system could have made that throw for you. No algorithm could have felt Dre's timing the way you do.</p>
+      <p>That's not a knock on the machine. It's just the truth.</p>
+      <p><em>There are things humans bring that are irreducibly ours. The history in your hands. The trust in your team. The way competition feels when the outcome is genuinely uncertain.</em></p>
+    `
+  },
+
+  // ══════════════════════════════════════════════════════════
+  ending_team: {
+    label: 'FINAL SCORE · RIDGECREST 24, WESTFIELD 20',
+    progress: 100,
+    isEnding: true,
+    endingTag: 'THE WHOLE TEAM',
+    endingNote: 'You discovered that the most human thing might be knowing how to collaborate — with each other, and with the tools we make.',
+    text: `
+      <p>Timeout. You wave everyone in — all eleven.</p>
+      <p>"ARIA says sneak. I'm reading the linebacker — he's square, which means Dre might have a crease on a slant. Both could work. What do you all see?"</p>
+      <p>TJ: <em>"Their nose guard's been playing soft. Sneak might have more room than it looks."</em></p>
+      <p>Dre: <em>"Their safety's a step slow on in-breaking routes all half. Slant is there."</em></p>
+      <span class="aria-voice">ARIA: "Both reads are consistent with what I'm seeing. I'd weight the sneak slightly — but the slant has merit. Either can work."</span>
+      <p>You look at them. Your team. The voice in your ear. All of it at once.</p>
+      <p>"Okay. Sneak right. Dre — if TJ opens it, we're done. If it closes, second play is the slant. <em>Together.</em>"</p>
+      <p>TJ grins. That is, by any measure, a standing ovation.</p>
+      <hr class="divider" />
+      <p>You get three yards. First down. You score two plays later.</p>
+      <p>Coach Harris finds you near the tunnel afterward. He shakes your hand the way coaches only shake hands after something real.</p>
+      <p>"That timeout," he says. "That was leadership."</p>
+      <p>You think about the huddle. ARIA weighed in without pretending to be the last word. TJ and Dre both saw something different. You listened to all of it — and made a call.</p>
+      <p><em>ARIA processed 247 plays. TJ felt the nose guard cheat. Dre watched the safety all half. You read the room. None of those things alone wins the game. All of them together just did.</em></p>
+    `
+  }
+};
+
+// ─── Rendering ───────────────────────────────────────────────────────────────
+function renderPassage(id) {
+  const p = passages[id];
+  if (!p) return;
+
+  passageCount++;
+
+  document.getElementById('scene-label').textContent = p.label;
+  document.getElementById('story-text').innerHTML = p.text;
+  document.getElementById('progress-bar').style.width = p.progress + '%';
+  document.getElementById('progress-label').textContent =
+    p.isEnding ? 'ENDING' : `PASSAGE ${passageCount}`;
+
+  const choicesEl = document.getElementById('choices-container');
+  choicesEl.innerHTML = '';
+
+  if (p.isEnding) {
+    // Render ending card
+    const card = document.createElement('div');
+    card.className = 'ending-card';
+    card.innerHTML = `
+      <div class="ending-label">You reached an ending</div>
+      <div class="ending-title">"${p.endingTag}"</div>
+      <div class="ending-subtext">${p.endingNote}</div>
+    `;
+    const restart = document.createElement('button');
+    restart.className = 'restart-btn';
+    restart.textContent = '↺ Play again from the beginning';
+    restart.onclick = () => {
+      score = 0;
+      teamCommit = false;
+      passageCount = 0;
+      renderPassage('start');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    card.appendChild(restart);
+    choicesEl.appendChild(card);
+
+  } else if (p.choices.length === 1 && !p.choices[0].text.includes('"')) {
+    // Single "continue" passage
+    const btn = document.createElement('button');
+    btn.className = 'continue-btn';
+    btn.textContent = p.choices[0].text + ' →';
+    btn.onclick = () => {
+      if (p.choices[0].delta) score += p.choices[0].delta;
+      goTo(p.choices[0].next);
+    };
+    choicesEl.appendChild(btn);
+
+  } else {
+    // Multiple choices
+    const prompt = document.createElement('div');
+    prompt.className = 'choice-prompt';
+    prompt.textContent = 'What do you do?';
+    choicesEl.appendChild(prompt);
+
+    p.choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = c.text;
+      btn.onclick = () => {
+        if (c.delta) score += c.delta;
+        if (c.commit !== undefined) teamCommit = c.commit;
+        goTo(c.next);
+      };
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goTo(id) {
+  // Re-animate
+  const story = document.getElementById('story-text');
+  story.style.animation = 'none';
+  story.offsetHeight; // reflow
+  story.style.animation = '';
+  renderPassage(id);
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+renderPassage('start');
+</script>
+</body>
+</html>
