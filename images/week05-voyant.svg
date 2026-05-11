@@ -1,5 +1,158 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675">
-  <rect width="100%" height="100%" fill="#ffffff" stroke="#cccccc"/>
-  <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#333">Voyant Tools screenshot placeholder</text>
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#666">Replace this file with your actual screenshot named `week05-voyant.png`</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1366" height="768" viewBox="0 0 1366 768">
+  <defs>
+    <style>
+      .ui { font-family: Arial, Helvetica, sans-serif; }
+      .small { font-size: 12px; fill: #444; }
+      .mid { font-size: 14px; fill: #333; }
+      .title { font-size: 18px; font-weight: 700; fill: #222; }
+      .panel { fill: #ffffff; stroke: #d9d9d9; }
+      .header { fill: #1e88e5; }
+      .tab { fill: #4aa3ff; }
+      .muted { fill: #7a7a7a; }
+      .link { stroke: #cfcfcf; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1366" height="768" fill="#f7f7f7"/>
+
+  <rect x="0" y="0" width="1366" height="34" class="header"/>
+  <text x="683" y="22" class="ui" font-size="15" fill="#ffffff" text-anchor="middle">Voyant Tools</text>
+  <circle cx="1060" cy="17" r="4" fill="#fff" opacity="0.9"/>
+  <text x="1348" y="22" class="ui" font-size="18" fill="#ffffff" text-anchor="end">?</text>
+
+  <rect x="14" y="41" width="96" height="22" rx="3" class="tab"/>
+  <text x="62" y="56" class="ui" font-size="13" fill="#fff" text-anchor="middle">Cirrus</text>
+  <text x="124" y="56" class="ui small">Terms</text>
+  <text x="184" y="56" class="ui small">Links</text>
+  <text x="420" y="56" class="ui small">Reader</text>
+  <text x="548" y="56" class="ui small">TermsBerry</text>
+  <text x="950" y="56" class="ui small">Trends</text>
+  <text x="1040" y="56" class="ui small">Document Terms</text>
+
+  <rect x="0" y="64" width="452" height="392" class="panel"/>
+  <rect x="452" y="64" width="460" height="392" class="panel"/>
+  <rect x="912" y="64" width="454" height="392" class="panel"/>
+
+  <rect x="0" y="466" width="683" height="302" class="panel"/>
+  <rect x="683" y="466" width="683" height="302" class="panel"/>
+
+  <g class="ui">
+    <text x="90" y="154" font-size="34" fill="#47c843">nevermore</text>
+    <text x="180" y="235" font-size="56" fill="#7e49ff">raven</text>
+    <text x="302" y="262" font-size="44" fill="#ff45e6">door</text>
+    <text x="238" y="298" font-size="30" fill="#5c46db">quoth</text>
+    <text x="290" y="332" font-size="30" fill="#4fd7ee">bird</text>
+    <text x="316" y="184" font-size="28" fill="#77cc33">chamber</text>
+    <text x="370" y="150" font-size="22" fill="#c57fff">said</text>
+    <text x="366" y="214" font-size="20" fill="#ffb000">Lenore</text>
+    <text x="103" y="277" font-size="18" fill="#666">tapping</text>
+    <text x="48" y="212" font-size="18" fill="#9b9b9b">close</text>
+    <text x="166" y="96" font-size="16" fill="#999">angels</text>
+    <text x="240" y="118" font-size="14" fill="#bbb">fancy</text>
+    <text x="288" y="146" font-size="12" fill="#c5c5c5">shadow</text>
+    <text x="24" y="262" font-size="11" fill="#85d9e5">token</text>
+    <text x="58" y="303" font-size="11" fill="#d88">echo</text>
+    <text x="150" y="340" font-size="12" fill="#a0a0a0">heart</text>
+  </g>
+
+  <rect x="470" y="92" width="12" height="330" fill="#e9e9e9"/>
+  <text x="470" y="133" class="ui title">The Raven Full Text - The Raven - Owl Eyes</text>
+  <text x="470" y="172" class="ui mid">The Raven</text>
+  <text x="470" y="208" class="ui mid">The Raven</text>
+  <text x="470" y="246" class="ui mid">Introduction The Raven</text>
+  <text x="470" y="284" class="ui mid">Text Size Font Georgia Helvetica Verdana Trebuchet MS Adelle Line Spacing</text>
+  <text x="470" y="322" class="ui mid">Column Width Text Alignment Reading Mode</text>
+  <text x="470" y="368" class="ui mid">close</text>
+  <text x="470" y="404" class="ui mid">close</text>
+
+  <g>
+    <text x="945" y="105" class="ui small">raven</text>
+    <text x="1003" y="105" class="ui small">nevermore</text>
+    <text x="1082" y="105" class="ui small">door</text>
+    <text x="1140" y="105" class="ui small">chamber</text>
+    <text x="1211" y="105" class="ui small">bird</text>
+    <polyline points="947,327 979,109 1014,328 1046,325 1082,323 1114,210 1145,170 1174,325 1212,220 1245,322" fill="none" stroke="#1834ff" stroke-width="2"/>
+    <polyline points="947,324 979,324 1014,324 1046,324 1082,324 1114,290 1145,272 1174,262 1212,220 1245,220" fill="none" stroke="#33c23b" stroke-width="2"/>
+    <polyline points="947,323 979,323 1014,323 1046,323 1082,323 1114,321 1145,320 1174,320 1212,320 1245,110" fill="none" stroke="#ff37e8" stroke-width="2"/>
+    <rect x="945" y="130" width="370" height="218" fill="none" stroke="#bcbcbc"/>
+    <line x1="945" y1="348" x2="1315" y2="348" stroke="#bcbcbc"/>
+    <line x1="945" y1="130" x2="945" y2="348" stroke="#bcbcbc"/>
+  </g>
+
+  <g class="ui">
+    <text x="18" y="500" class="ui mid">This corpus has 1 document with 1,119 total words and 455 unique word forms. Created now.</text>
+    <text x="18" y="548" class="ui mid">Vocabulary Density: 0.407</text>
+    <text x="18" y="582" class="ui mid">Readability Index: 26.566</text>
+    <text x="18" y="614" class="ui mid">Average Words Per Sentence: 28.7</text>
+    <text x="18" y="652" class="ui mid">Most frequent words in the corpus:</text>
+    <text x="24" y="676" class="ui mid">• </text>
+    <text x="40" y="676" fill="#f6c700" font-weight="700">raven</text>
+    <text x="97" y="676" class="ui mid">(14);</text>
+    <text x="146" y="676" fill="#ff8c00" font-weight="700">door</text>
+    <text x="192" y="676" class="ui mid">(14);</text>
+    <text x="240" y="676" fill="#aaff00" font-weight="700">nevermore</text>
+    <text x="335" y="676" class="ui mid">(11);</text>
+    <text x="384" y="676" fill="#f0d000" font-weight="700">chamber</text>
+    <text x="463" y="676" class="ui mid">(11);</text>
+    <text x="512" y="676" fill="#ffef3b" font-weight="700">bird</text>
+    <text x="553" y="676" class="ui mid">(10)</text>
+  </g>
+
+  <g class="ui small">
+    <rect x="18" y="708" width="12" height="12" rx="6" fill="#d9d9d9"/>
+    <text x="38" y="718">Items:</text>
+  </g>
+
+  <rect x="693" y="485" width="102" height="34" fill="#f0f0f0" stroke="#d1d1d1"/>
+  <rect x="801" y="485" width="102" height="34" fill="#f0f0f0" stroke="#d1d1d1"/>
+  <text x="722" y="507" class="ui mid">Contexts</text>
+  <text x="833" y="507" class="ui mid muted">Bubblelines</text>
+  <text x="919" y="507" class="ui mid muted">Collocates</text>
+
+  <text x="714" y="532" class="ui small">Document</text>
+  <text x="880" y="532" class="ui small">Left</text>
+  <text x="958" y="532" class="ui small">Term</text>
+  <text x="1010" y="532" class="ui small">Right</text>
+
+  <g class="ui small">
+    <line x1="693" y1="548" x2="1366" y2="548" class="link"/>
+    <line x1="693" y1="580" x2="1366" y2="580" class="link"/>
+    <line x1="693" y1="612" x2="1366" y2="612" class="link"/>
+    <line x1="693" y1="644" x2="1366" y2="644" class="link"/>
+    <line x1="693" y1="676" x2="1366" y2="676" class="link"/>
+    <line x1="693" y1="708" x2="1366" y2="708" class="link"/>
+    <text x="707" y="564">The Rav...</text>
+    <text x="822" y="564">The</text>
+    <text x="950" y="564">ra...</text>
+    <text x="1004" y="564">The Raven Introduction The Raven</text>
+
+    <text x="707" y="596">The Rav...</text>
+    <text x="822" y="596">The Raven</text>
+    <text x="950" y="596">ra...</text>
+    <text x="1004" y="596">Introduction The Raven Text Size</text>
+
+    <text x="707" y="628">The Rav...</text>
+    <text x="822" y="628">Raven The Raven</text>
+    <text x="950" y="628">ra...</text>
+    <text x="1004" y="628">Text Size Font Georgia Helvetica</text>
+
+    <text x="707" y="660">The Rav...</text>
+    <text x="822" y="660">close close close</text>
+    <text x="950" y="660">ra...</text>
+    <text x="1004" y="660">Once upon a midnight dreary</text>
+
+    <text x="707" y="692">The Rav...</text>
+    <text x="822" y="692">In the</text>
+    <text x="950" y="692">ra...</text>
+    <text x="1004" y="692">of the saintly days of</text>
+
+    <text x="707" y="724">The Rav...</text>
+    <text x="822" y="724">craven, Ghastly grim and ancient</text>
+    <text x="950" y="724">ra...</text>
+    <text x="1004" y="724">wandering from the Nightly shore</text>
+  </g>
+
+  <text x="1128" y="754" class="ui small">14 context</text>
+  <text x="1260" y="754" class="ui small">expand</text>
+  <rect x="1102" y="743" width="14" height="14" rx="7" fill="#ddd"/>
 </svg>
