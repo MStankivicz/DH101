@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="1536" viewBox="0 0 768 1536">
+  <defs>
+    <style>
+      .ui { font-family: Arial, Helvetica, sans-serif; }
+      .title { font-size: 64px; font-weight: 700; fill: #ffffff; }
+      .subtitle { font-size: 28px; fill: #ffffff; }
+      .small { font-size: 18px; fill: #1b2457; }
+      .section { font-size: 34px; font-weight: 700; fill: #1b2457; }
+      .num { font-size: 76px; font-weight: 700; fill: #1b2457; }
+      .heading { font-size: 30px; fill: #1b2457; }
+      .cardText { fill: #1b2457; }
+    </style>
+  </defs>
+  <rect width="768" height="1536" fill="#0f163c"/>
+
+  <text x="70" y="78" class="ui" font-size="34" fill="#ffbf00">AI Sustainability</text>
+  <text x="56" y="170" class="ui title">The Hidden</text>
+  <text x="56" y="250" class="ui title">Cost of AI</text>
+  <text x="88" y="332" class="ui subtitle">What it really costs to use AI</text>
+
+  <g opacity="0.95">
+    <rect x="460" y="18" width="78" height="92" rx="12" fill="#ff8ff3"/>
+    <rect x="585" y="0" width="105" height="105" rx="52" fill="#f4b000"/>
+    <rect x="640" y="142" width="128" height="26" rx="13" fill="#6ec8ff" transform="rotate(32 640 142)"/>
+    <rect x="610" y="195" width="110" height="74" rx="12" fill="#9bf28b" transform="rotate(-22 610 195)"/>
+    <rect x="612" y="48" width="65" height="138" rx="30" fill="#0f163c" opacity="0.15"/>
+  </g>
+
+  <g>
+    <rect x="50" y="374" width="668" height="328" rx="30" fill="#e87de9"/>
+    <text x="112" y="447" class="ui" font-size="28" fill="#1b2457">Estimated CO2 emitted during GPT-3</text>
+    <text x="245" y="498" class="ui" font-size="28" fill="#1b2457">training.</text>
+    <text x="74" y="592" class="ui num">552 Tons</text>
+    <text x="109" y="660" class="ui small">The amount of CO2 it took to</text>
+    <text x="109" y="686" class="ui small">completely train the GPT-3</text>
+    <text x="109" y="712" class="ui small">Model - MIT</text>
+    <g transform="translate(402,415)" stroke="#1b2457" fill="none" stroke-width="4">
+      <line x1="0" y1="300" x2="0" y2="110"/>
+      <line x1="18" y1="300" x2="18" y2="114"/>
+      <line x1="36" y1="300" x2="36" y2="104"/>
+      <line x1="54" y1="300" x2="54" y2="96"/>
+      <line x1="72" y1="300" x2="72" y2="88"/>
+      <line x1="90" y1="300" x2="90" y2="80"/>
+      <line x1="108" y1="300" x2="108" y2="70"/>
+      <line x1="126" y1="300" x2="126" y2="60"/>
+      <line x1="144" y1="300" x2="144" y2="52"/>
+      <line x1="162" y1="300" x2="162" y2="42"/>
+      <line x1="180" y1="300" x2="180" y2="32"/>
+      <line x1="198" y1="300" x2="198" y2="22"/>
+      <line x1="216" y1="300" x2="216" y2="10"/>
+      <line x1="234" y1="300" x2="234" y2="0"/>
+    </g>
+  </g>
+
+  <g>
+    <rect x="50" y="712" width="668" height="226" rx="28" fill="#f2ad10"/>
+    <text x="108" y="778" class="ui" font-size="28" fill="#1b2457">AI &amp; Ecology</text>
+    <text x="72" y="860" class="ui num">560 flights</text>
+    <text x="72" y="920" class="ui small">One GPT-3 training run equals</text>
+    <text x="72" y="946" class="ui small">about 560 passenger round</text>
+    <text x="72" y="972" class="ui small">trips.</text>
+  </g>
+
+  <g>
+    <rect x="50" y="950" width="668" height="250" rx="28" fill="#b5f29d"/>
+    <text x="86" y="988" class="ui" font-size="24" font-weight="700" fill="#1b2457">SINGLE QUERY FOOTPRINT</text>
+    <text x="84" y="1040" class="ui" font-size="30" fill="#1b2457">AI footprint in numbers</text>
+    <text x="78" y="1118" class="ui num">4.55 g CO2</text>
+    <text x="78" y="1186" class="ui small">CO2 per ChatGPT query, mid</text>
+    <text x="78" y="1210" class="ui small">estimate. - University of</text>
+    <text x="78" y="1234" class="ui small">Michigan</text>
+  </g>
+
+  <g>
+    <rect x="50" y="1222" width="668" height="262" rx="28" fill="#79b9e7"/>
+    <text x="80" y="1265" class="ui" font-size="22" font-weight="700" fill="#1b2457">▲ HOUSEHOLD EQUIVALENT</text>
+    <text x="78" y="1320" class="ui" font-size="32" fill="#1b2457">GPT-3 training footprint</text>
+    <text x="74" y="1390" class="ui num">15,234</text>
+    <text x="74" y="1450" class="ui small">About 11 U.S. households for</text>
+    <text x="74" y="1474" class="ui small">one year, using 48 tons each.</text>
+    <g fill="#1b2457" transform="translate(410,1300)">
+      <circle cx="0" cy="0" r="10"/>
+      <rect x="-7" y="12" width="14" height="46" rx="7"/>
+      <rect x="-22" y="24" width="12" height="28" rx="6"/>
+      <rect x="10" y="24" width="12" height="28" rx="6"/>
+      <circle cx="48" cy="0" r="10"/>
+      <rect x="41" y="12" width="14" height="46" rx="7"/>
+      <rect x="26" y="24" width="12" height="28" rx="6"/>
+      <rect x="58" y="24" width="12" height="28" rx="6"/>
+      <circle cx="96" cy="0" r="10"/>
+      <rect x="89" y="12" width="14" height="46" rx="7"/>
+      <rect x="74" y="24" width="12" height="28" rx="6"/>
+      <rect x="106" y="24" width="12" height="28" rx="6"/>
+      <circle cx="144" cy="0" r="10"/>
+      <rect x="137" y="12" width="14" height="46" rx="7"/>
+      <rect x="122" y="24" width="12" height="28" rx="6"/>
+      <rect x="154" y="24" width="12" height="28" rx="6"/>
+      <circle cx="192" cy="0" r="10"/>
+      <rect x="185" y="12" width="14" height="46" rx="7"/>
+      <rect x="170" y="24" width="12" height="28" rx="6"/>
+      <rect x="202" y="24" width="12" height="28" rx="6"/>
+      <circle cx="0" cy="76" r="10"/>
+      <rect x="-7" y="88" width="14" height="46" rx="7"/>
+      <rect x="-22" y="100" width="12" height="28" rx="6"/>
+      <rect x="10" y="100" width="12" height="28" rx="6"/>
+      <circle cx="48" cy="76" r="10"/>
+      <rect x="41" y="88" width="14" height="46" rx="7"/>
+      <rect x="26" y="100" width="12" height="28" rx="6"/>
+      <rect x="58" y="100" width="12" height="28" rx="6"/>
+      <circle cx="96" cy="76" r="10"/>
+      <rect x="89" y="88" width="14" height="46" rx="7"/>
+      <rect x="74" y="100" width="12" height="28" rx="6"/>
+      <rect x="106" y="100" width="12" height="28" rx="6"/>
+      <circle cx="144" cy="76" r="10" fill="#ffffff"/>
+      <rect x="137" y="88" width="14" height="46" rx="7" fill="#ffffff"/>
+      <rect x="122" y="100" width="12" height="28" rx="6" fill="#ffffff"/>
+      <rect x="154" y="100" width="12" height="28" rx="6" fill="#ffffff"/>
+    </g>
+  </g>
+</svg>
