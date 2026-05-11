@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="768" viewBox="0 0 2048 768">
+  <defs>
+    <style>
+      .ui { font-family: Arial, Helvetica, sans-serif; }
+      .panel { fill: #c7ecf7; stroke: #2c2c2c; stroke-width: 4; }
+      .desk { fill: #8b4e12; stroke: #5e3309; stroke-width: 4; }
+      .caption { fill: #f5d77a; }
+      .small { font-size: 28px; fill: #111; }
+      .bubble { fill: #fff; stroke: #222; stroke-width: 4; }
+    </style>
+  </defs>
+  <rect width="2048" height="768" fill="#ffffff"/>
+  <rect x="0" y="0" width="680" height="768" class="panel"/>
+  <rect x="684" y="0" width="680" height="768" class="panel"/>
+  <rect x="1368" y="0" width="680" height="768" class="panel"/>
+
+  <g transform="translate(0,0)">
+    <rect x="0" y="0" width="680" height="570" fill="#c7ecf7"/>
+    <ellipse cx="300" cy="300" rx="300" ry="250" fill="#eef9ff" opacity="0.9"/>
+    <rect x="80" y="430" width="580" height="140" class="desk"/>
+    <rect x="50" y="430" width="100" height="70" fill="#96a0aa" stroke="#555" stroke-width="3"/>
+    <rect x="545" y="230" width="60" height="260" fill="#eee1c9" stroke="#555" stroke-width="3"/>
+    <rect x="560" y="250" width="18" height="200" fill="#777"/>
+    <rect x="584" y="250" width="18" height="200" fill="#777"/>
+    <rect x="608" y="250" width="18" height="200" fill="#777"/>
+    <rect x="100" y="250" width="170" height="170" fill="#6b88c8" rx="30"/>
+    <circle cx="300" cy="250" r="45" fill="#d8a07f"/>
+    <rect x="250" y="295" width="100" height="130" rx="45" fill="#6a7f58"/>
+    <rect x="270" y="310" width="180" height="120" fill="#fff" stroke="#444" stroke-width="4"/>
+    <rect x="350" y="325" width="20" height="100" fill="#bbb"/>
+    <text x="145" y="132" class="ui" font-size="50" fill="#111">Where’s</text>
+    <text x="130" y="176" class="ui" font-size="50" fill="#111">the injury? The</text>
+    <text x="155" y="220" class="ui" font-size="50" fill="#111">frustration? The</text>
+    <text x="170" y="264" class="ui" font-size="50" fill="#111">setbacks?</text>
+    <path d="M287 274 L300 320" fill="none" stroke="#222" stroke-width="4"/>
+    <rect x="0" y="570" width="680" height="198" class="caption"/>
+    <text x="20" y="623" class="ui small">The student sees a visual of “The Perfect Athlete”</text>
+    <text x="20" y="662" class="ui small">while comparing it to himself in his own mind. He is not</text>
+    <text x="20" y="701" class="ui small">happy about this</text>
+  </g>
+
+  <g transform="translate(684,0)">
+    <rect x="0" y="0" width="680" height="570" fill="#c7ecf7"/>
+    <ellipse cx="340" cy="290" rx="270" ry="220" fill="#eef9ff" opacity="0.95"/>
+    <rect x="40" y="420" width="600" height="140" class="desk"/>
+    <rect x="30" y="420" width="90" height="70" fill="#96a0aa" stroke="#555" stroke-width="3"/>
+    <rect x="542" y="230" width="60" height="260" fill="#eee1c9" stroke="#555" stroke-width="3"/>
+    <rect x="560" y="250" width="18" height="200" fill="#777"/>
+    <rect x="584" y="250" width="18" height="200" fill="#777"/>
+    <rect x="608" y="250" width="18" height="200" fill="#777"/>
+    <rect x="100" y="250" width="170" height="170" fill="#6b88c8" rx="30"/>
+    <circle cx="300" cy="250" r="45" fill="#d8a07f"/>
+    <rect x="250" y="295" width="100" height="130" rx="45" fill="#6a7f58"/>
+    <rect x="270" y="310" width="180" height="120" fill="#fff" stroke="#444" stroke-width="4"/>
+    <rect x="350" y="325" width="20" height="100" fill="#bbb"/>
+    <text x="180" y="145" class="ui" font-size="46" fill="#111">Let</text>
+    <text x="142" y="192" class="ui" font-size="46" fill="#111">me fix</text>
+    <text x="146" y="239" class="ui" font-size="46" fill="#111">this...</text>
+    <path d="M340 244 L340 320" fill="none" stroke="#222" stroke-width="4" stroke-dasharray="6 6"/>
+    <rect x="0" y="570" width="680" height="198" class="caption"/>
+    <text x="20" y="623" class="ui small">He starts making edits. (on screen edits: “injury,”</text>
+    <text x="20" y="662" class="ui small">“doubt,” “recovery,” “uncertainty”). The frustration is</text>
+    <text x="20" y="701" class="ui small">getting to him. Why can’t that be him.</text>
+  </g>
+
+  <g transform="translate(1368,0)">
+    <rect x="0" y="0" width="680" height="570" fill="#c7ecf7"/>
+    <ellipse cx="340" cy="290" rx="270" ry="220" fill="#eef9ff" opacity="0.95"/>
+    <rect x="40" y="420" width="600" height="140" class="desk"/>
+    <rect x="30" y="420" width="90" height="70" fill="#96a0aa" stroke="#555" stroke-width="3"/>
+    <rect x="542" y="230" width="60" height="260" fill="#eee1c9" stroke="#555" stroke-width="3"/>
+    <rect x="560" y="250" width="18" height="200" fill="#777"/>
+    <rect x="584" y="250" width="18" height="200" fill="#777"/>
+    <rect x="608" y="250" width="18" height="200" fill="#777"/>
+    <rect x="100" y="250" width="170" height="170" fill="#6b88c8" rx="30"/>
+    <circle cx="300" cy="250" r="45" fill="#d8a07f"/>
+    <rect x="250" y="295" width="100" height="130" rx="45" fill="#6a7f58"/>
+    <rect x="270" y="310" width="180" height="120" fill="#fff" stroke="#444" stroke-width="4"/>
+    <rect x="350" y="325" width="20" height="100" fill="#bbb"/>
+    <text x="136" y="120" class="ui" font-size="44" fill="#111">Finally,</text>
+    <text x="95" y="165" class="ui" font-size="44" fill="#111">a story that</text>
+    <text x="93" y="210" class="ui" font-size="44" fill="#111">almost feels</text>
+    <text x="145" y="255" class="ui" font-size="44" fill="#111">like me</text>
+    <path d="M342 252 L342 320" fill="none" stroke="#222" stroke-width="4" stroke-dasharray="6 6"/>
+    <rect x="0" y="570" width="680" height="198" class="caption"/>
+    <text x="20" y="623" class="ui small">Reading over the story, he becomes relieved by the</text>
+    <text x="20" y="662" class="ui small">edits he made. Realizing AI can’t do everything, there</text>
+    <text x="20" y="701" class="ui small">needs to be a connection.</text>
+  </g>
+</svg>

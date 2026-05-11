@@ -1,13 +1,12 @@
-# Week 3 – Selfie & Identity
+# Week 3 – Comic & Storytelling
 
 ## The Artifact
 Below are the screenshots for my 6-panel comic about a student using AI to write a story and how that intersects with identity.
 
-![Comic panel set 1](images/week03-1.png)
+![Comic panel set 1](../images/week03-1.svg)
 
-![Comic panel set 2](images/week03-2.png)
+![Comic panel set 2](../images/week03-2.svg)
 
-Notes: I added the images as placeholders. I haven't received the PDF you mentioned, so the text below is filled in from the screenshots themselves. Please upload the PDF to the `images/` folder (or attach it here) if you want me to extract additional material from it.
 
 ## Process Notes
 How I made this
@@ -28,4 +27,3 @@ In digital humanities terms, this project raises questions about authorship and 
 - What AI generated: the comic depicts AI-generated narrative text that felt generic; I used the screenshots to reconstruct the sequence and wrote the reflection and process notes.
 - What I changed or decided: I added captions, transcription-based notes, and a reflection that interprets the comic. I have not modified the images themselves in this file.
 
-Note: I could not find the PDF you mentioned. If you upload the PDF, I will extract text and any additional images and update this page accordingly.
