@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hidden Geographies of AI — Infrastructure Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    :root {
+      --hq:    #5ba3f5;
+      --dc:    #4ade80;
+      --mine:  #f97316;
+      --labor: #c084fc;
+      --bg:    #0d0d0d;
+      --panel: #141414;
+      --border:#2a2a2a;
+      --text:  #e5e5e5;
+      --dim:   #888;
+      --mono:  'Courier New', monospace;
+      --sans:  -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); }
+
+    /* ── Layout ── */
+    .app { display: flex; height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 340px;
+      min-width: 340px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+    .sidebar-header {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header .kicker {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 6px;
+    }
+    .sidebar-header h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text);
+    }
+    .sidebar-header .byline {
+      font-size: 0.75rem;
+      color: var(--dim);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* ── Layer toggles ── */
+    .layer-controls {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .layer-controls .label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 10px;
+    }
+    .layer-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text);
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    .layer-btn:hover { border-color: #444; background: #1e1e1e; }
+    .layer-btn.active { background: #1a1a1a; }
+    .layer-btn.inactive { opacity: 0.4; }
+    .dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .count-badge {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--dim);
+    }
+
+    /* ── Info panel ── */
+    .info-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+    .info-placeholder {
+      padding: 24px 20px;
+      color: var(--dim);
+      font-size: 0.82rem;
+      line-height: 1.7;
+      font-style: italic;
+    }
+    .location-card {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: none;
+    }
+    .location-card.visible { display: block; }
+    .loc-layer-tag {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .loc-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .loc-geo {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--dim);
+      margin-bottom: 12px;
+    }
+    .loc-desc {
+      font-size: 0.82rem;
+      line-height: 1.75;
+      color: #ccc;
+    }
+    .loc-desc strong { color: var(--text); }
+    .loc-source {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--dim);
+      margin-top: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      color: var(--dim);
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      cursor: pointer;
+      padding: 14px 20px 10px;
+      letter-spacing: 0.06em;
+    }
+    .back-btn:hover { color: var(--text); }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      padding: 10px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .stat { font-family: var(--mono); font-size: 0.62rem; color: var(--dim); }
+    .stat span { color: var(--text); font-weight: 600; }
+
+    /* ── Map ── */
+    #map { flex: 1; }
+
+    /* ── Custom markers ── */
+    .custom-marker {
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.25);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .custom-marker:hover {
+      transform: scale(1.4);
+      box-shadow: 0 0 14px currentColor;
+      z-index: 9999 !important;
+    }
+    .pulse {
+      animation: pulse 2.2s infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(249,115,22,0.7); }
+      70%  { box-shadow: 0 0 0 8px rgba(249,115,22,0); }
+      100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
+    }
+
+    /* ── Leaflet popup overrides ── */
+    .leaflet-popup-content-wrapper {
+      background: #1c1c1c;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+      font-family: var(--sans);
+    }
+    .leaflet-popup-tip { background: #1c1c1c; }
+    .leaflet-popup-content { margin: 14px 16px; font-size: 0.82rem; line-height: 1.6; max-width: 280px; }
+    .leaflet-popup-content h3 { font-size: 0.9rem; margin-bottom: 4px; }
+    .leaflet-popup-content .pop-tag {
+      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em;
+      text-transform: uppercase; margin-bottom: 6px; opacity: 0.8;
+    }
+    .leaflet-popup-content p { color: #bbb; margin-top: 6px; }
+    .leaflet-popup-content .pop-cta {
+      font-family: var(--mono); font-size: 0.62rem; color: #666;
+      margin-top: 8px; font-style: italic;
+    }
+
+    /* ── Map attribution ── */
+    .leaflet-control-attribution { font-size: 0.55rem !important; }
+
+    /* mobile */
+    @media (max-width: 640px) {
+      .app { flex-direction: column; }
+      .sidebar { width: 100%; min-width: unset; height: 45vh; border-right: none; border-bottom: 1px solid var(--border); }
+      #map { flex: 1; min-height: 55vh; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Sidebar ── -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="kicker">Counter-Map · AI Infrastructure</div>
+      <h1>Hidden Geographies<br>of Artificial Intelligence</h1>
+      <div class="byline">Where AI is built, powered, and maintained — and who bears the cost. Click any marker to explore.</div>
+    </div>
+
+    <div class="layer-controls">
+      <div class="label">Layers — click to toggle</div>
+      <button class="layer-btn active" id="btn-hq" onclick="toggleLayer('hq')">
+        <span class="dot" style="background:var(--hq)"></span>
+        Corporate Headquarters
+        <span class="count-badge" id="cnt-hq"></span>
+      </button>
+      <button class="layer-btn active" id="btn-dc" onclick="toggleLayer('dc')">
+        <span class="dot" style="background:var(--dc)"></span>
+        Data Centers
+        <span class="count-badge" id="cnt-dc"></span>
+      </button>
+      <button class="layer-btn active" id="btn-mine" onclick="toggleLayer('mine')">
+        <span class="dot" style="background:var(--mine)"></span>
+        Mining Sites
+        <span class="count-badge" id="cnt-mine"></span>
+      </button>
+      <button class="layer-btn active" id="btn-labor" onclick="toggleLayer('labor')">
+        <span class="dot" style="background:var(--labor)"></span>
+        Labor &amp; Moderation
+        <span class="count-badge" id="cnt-labor"></span>
+      </button>
+    </div>
+
+    <!-- Info panel -->
+    <div class="info-panel" id="info-panel">
+      <div class="info-placeholder" id="info-placeholder">
+        Select a marker to read about that location — who works there, who benefits, what gets extracted, and what gets hidden.
+        <br><br>
+        The most important AI infrastructure is not in Silicon Valley.
+      </div>
+      <div class="location-card" id="location-card">
+        <button class="back-btn" onclick="showPlaceholder()">← Back to map</button>
+        <div style="padding: 0 20px 20px;">
+          <div class="loc-layer-tag" id="card-tag"></div>
+          <div class="loc-name" id="card-name"></div>
+          <div class="loc-geo" id="card-geo"></div>
+          <div class="loc-desc" id="card-desc"></div>
+          <div class="loc-source" id="card-source"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat">Locations: <span>25</span></div>
+      <div class="stat">Layers: <span>4</span></div>
+      <div class="stat">Countries: <span>18</span></div>
+    </div>
+  </div>
+
+  <!-- ── Map ── -->
+  <div id="map"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ─── Location Data ─────────────────────────────────────────────────────────────
+const LOCATIONS = [
+
+  // ══ CORPORATE HQ ══════════════════════════════════════════════════
+  {
+    id: 'openai', layer: 'hq', name: 'OpenAI',
+    geo: 'San Francisco, CA, USA', lat: 37.792, lng: -122.402,
+    desc: `<strong>Founded 2015. Valued at ~$157B (2025).</strong> Decisions about AI safety, deployment, and policy are made here for systems used by hundreds of millions globally. San Francisco's tech ecosystem provides access to capital and talent—but AI governance is concentrated in one of the world's most expensive, least racially diverse cities. OpenAI's safety board, its model release decisions, its terms of service: all are made in a 49-square-mile city.`,
+    source: 'Sources: OpenAI corporate filings; Kate Crawford, Atlas of AI (2021)'
+  },
+  {
+    id: 'google', layer: 'hq', name: 'Google / Alphabet',
+    geo: 'Mountain View, CA, USA', lat: 37.422, lng: -122.084,
+    desc: `<strong>Google DeepMind, the merger of DeepMind and Google Brain, reports to Alphabet HQ here.</strong> Gemini, Google Search's AI features, and YouTube's recommendation algorithm—systems that shape what billions of people see and know—are governed 35 miles from San Francisco. Google's AI ethics team was dismantled after the firing of Timnit Gebru in 2020, a Black researcher who criticized the company's work on large language models.`,
+    source: 'Sources: MIT Technology Review; Gebru et al., "Stochastic Parrots" (2021)'
+  },
+  {
+    id: 'microsoft', layer: 'hq', name: 'Microsoft',
+    geo: 'Redmond, WA, USA', lat: 47.640, lng: -122.130,
+    desc: `<strong>After its $13B investment in OpenAI, Microsoft is one of the most powerful forces in AI deployment.</strong> GitHub Copilot, Azure OpenAI, and Bing AI are all governed from Redmond. Microsoft's AI ambitions are reshaping its energy footprint: the company's 2024 sustainability report showed its carbon emissions had risen 29% since its 2020 climate pledge, driven largely by data center expansion for AI.`,
+    source: 'Sources: Microsoft Sustainability Report 2024; Bloomberg'
+  },
+  {
+    id: 'meta', layer: 'hq', name: 'Meta (FAIR)',
+    geo: 'Menlo Park, CA, USA', lat: 37.484, lng: -122.149,
+    desc: `<strong>Home to FAIR (Fundamental AI Research) and the team behind LLaMA.</strong> Meta's AI decisions affect 3+ billion users of Facebook, Instagram, and WhatsApp. A 2023 TIME investigation found that Meta's content moderation policies—enforced largely by contractors in the Philippines—failed to prevent ethnic violence on its platform in countries including Ethiopia, Myanmar, and India, while executives focused on AI product growth.`,
+    source: 'Sources: TIME, "Facebook's Role in Ethiopia" (2022); Meta FAIR publications'
+  },
+  {
+    id: 'anthropic', layer: 'hq', name: 'Anthropic',
+    geo: 'San Francisco, CA, USA', lat: 37.784, lng: -122.408,
+    desc: `<strong>Founded 2021 by former OpenAI executives. Located blocks from OpenAI.</strong> The geographic concentration of AI decision-making in a single city—five major AI labs within a 40-mile radius—is itself an argument about who gets to shape this technology. Anthropic is developer of Claude, one of the leading large language models. Its "safety-first" positioning has attracted $8B+ from Amazon.`,
+    source: 'Sources: Anthropic corporate disclosures; The Atlantic, "The Peculiar Geography of AI" (2023)'
+  },
+  {
+    id: 'amazon', layer: 'hq', name: 'Amazon / AWS',
+    geo: 'Seattle, WA, USA', lat: 47.606, lng: -122.335,
+    desc: `<strong>Amazon Web Services hosts a significant portion of the AI industry's compute infrastructure.</strong> AWS's $8B investment in Anthropic, its Bedrock AI platform, and its own AI assistant Alexa are governed from Seattle. Amazon's Mechanical Turk—a platform for distributing small cognitive tasks to low-wage workers globally—is an early and persistent example of the labor invisible beneath "AI."`,
+    source: 'Sources: AWS corporate filings; Lilly Irani, "The Cultural Work of Microwork" (2015)'
+  },
+
+  // ══ DATA CENTERS ══════════════════════════════════════════════════
+  {
+    id: 'ashburn', layer: 'dc', name: 'Ashburn Data Center Corridor',
+    geo: 'Ashburn, Virginia, USA', lat: 39.043, lng: -77.488,
+    desc: `<strong>Ashburn is the data center capital of the world</strong>—home to more than a third of all global internet traffic. More than 100 data centers operate in Loudoun County alone. The infrastructure here has a historical reason: a fiber corridor laid during the 1990s internet boom, cheap electricity from coal-heavy PJM grid, and proximity to government clients in Washington D.C. Local residents have contested expansion for noise, light pollution, and water consumption.`,
+    source: 'Sources: Data Center Map; Washington Post, "The Hidden Cost of Data Centers" (2023)'
+  },
+  {
+    id: 'iowa', layer: 'dc', name: 'Iowa Data Center Cluster',
+    geo: 'Des Moines, Iowa, USA', lat: 41.587, lng: -93.625,
+    desc: `<strong>Microsoft and Meta operate massive data center campuses in Iowa.</strong> Iowa's appeal: cheap land, cold winters (free cooling), and historically low electricity prices. As AI model training requires enormous power, Iowa's grid—still significantly coal-dependent—is under increasing strain. Meta's data center in Altoona spans 2.6 million square feet and has received hundreds of millions in tax abatements from the state.`,
+    source: 'Sources: Iowa Environmental Council; Greenpeace, "Clicking Clean" (2022)'
+  },
+  {
+    id: 'dalles', layer: 'dc', name: 'The Dalles — Google Data Center',
+    geo: 'The Dalles, Oregon, USA', lat: 45.595, lng: -121.179,
+    desc: `<strong>Google's first major data center campus (2006) sits on the Columbia River.</strong> The river provides both hydroelectric power and cooling water. The Dalles negotiated significant tax incentives with Google—the company paid almost no property taxes for years, raising persistent questions about who benefits from "hosting" AI infrastructure. The arrangement is a template for dozens of similar deals between AI companies and rural governments.`,
+    source: 'Sources: Oregonian investigative series on Google tax deals (2012–2018); Google Environmental Report'
+  },
+  {
+    id: 'phoenix', layer: 'dc', name: 'Phoenix Data Center Hub',
+    geo: 'Phoenix, Arizona, USA', lat: 33.448, lng: -112.074,
+    desc: `<strong>Phoenix is a fast-growing data center hub—despite being in one of the hottest and driest places in North America.</strong> Land is cheap, tax incentives are available, and there's no state income tax on data centers. But Phoenix's expansion draws down water resources in the Colorado River watershed, which is already experiencing historic drought. A single Microsoft data center campus near Phoenix uses millions of gallons of water per day for cooling.`,
+    source: 'Sources: Arizona Republic; Microsoft Water Stewardship Report 2023'
+  },
+  {
+    id: 'iceland', layer: 'dc', name: 'Iceland — Green Data Centers',
+    geo: 'Reykjavik, Iceland', lat: 64.147, lng: -21.943,
+    desc: `<strong>Iceland attracts data centers with 100% renewable electricity (geothermal and hydroelectric) and natural cold air.</strong> Verne Global, atNorth, and others host AI compute here for clients seeking to reduce their carbon footprint. But "green" AI infrastructure still requires rare earth minerals, cobalt, and lithium to build. Iceland represents the best-case scenario for data center sustainability—and its best case still depends on extractive supply chains elsewhere.`,
+    source: 'Sources: Verne Global; IEA, "Data Centres and Data Transmission Networks" (2023)'
+  },
+  {
+    id: 'singapore', layer: 'dc', name: 'Singapore — Asia-Pacific Hub',
+    geo: 'Singapore', lat: 1.352, lng: 103.820,
+    desc: `<strong>Singapore is the most important data center hub in Asia-Pacific.</strong> Political stability, strong IP laws, and submarine cable connections across Asia make it the preferred location for US tech companies expanding regionally. But land scarcity has pushed data centers to unprecedented density: multi-story facilities now dominate. Singapore's grid is almost entirely natural gas—making its "green" credentials weaker than European alternatives.`,
+    source: 'Sources: Data Centre Dynamics; Singapore EDB'
+  },
+  {
+    id: 'amsterdam', layer: 'dc', name: 'Amsterdam — European Internet Hub',
+    geo: 'Amsterdam, Netherlands', lat: 52.368, lng: 4.904,
+    desc: `<strong>Amsterdam hosts AMS-IX, one of the world's largest internet exchange points,</strong> making it a natural data center hub. US tech companies locate here partly to serve European markets under GDPR while maintaining US corporate governance structures. The Netherlands has among the highest data center density in Europe, and the Dutch government has temporarily halted new data center construction near Amsterdam due to power grid constraints.`,
+    source: 'Sources: AMS-IX; Dutch Ministry of Economic Affairs data center moratorium (2022)'
+  },
+  {
+    id: 'hamina', layer: 'dc', name: 'Hamina — Google Nordic Data Center',
+    geo: 'Hamina, Finland', lat: 60.570, lng: 27.198,
+    desc: `<strong>Google's Nordic data center repurposes a former paper mill and uses seawater from the Gulf of Finland for cooling.</strong> Waste heat is routed back into the local district heating network—an unusually circular design. Hamina represents the genuine promise of sustainable AI infrastructure: renewable grid, circular heat use, cold climate. But its supply chains extend to Congo, Chile, and Myanmar.`,
+    source: 'Sources: Google Data Center blog; Finnish Energy'
+  },
+
+  // ══ MINING SITES ══════════════════════════════════════════════════
+  {
+    id: 'kolwezi', layer: 'mine', name: 'Kolwezi — Cobalt Mining',
+    geo: 'Kolwezi, Lualaba Province, DRC', lat: -10.717, lng: 25.467,
+    desc: `<strong>The DRC produces over 70% of the world's cobalt</strong>, a critical component of lithium-ion batteries that power AI hardware—from data center UPS systems to consumer devices. The Kolwezi region hosts both industrial operations (Glencore, China Molybdenum) and artisanal small-scale mining, the latter employing hundreds of thousands in dangerous conditions. In 2019, Congolese families sued Apple, Google, Tesla, Microsoft, and Dell for deaths and injuries in cobalt mines. Average miner wage: $1–$2/day.`,
+    source: 'Sources: Washington Post, "The cobalt pipeline" (2016); Siddharth Kara, Cobalt Red (2023)'
+  },
+  {
+    id: 'atacama', layer: 'mine', name: 'Atacama Desert — Lithium',
+    geo: 'Atacama, Antofagasta Region, Chile', lat: -23.433, lng: -68.017,
+    desc: `<strong>The Atacama holds the world's largest known lithium reserves.</strong> Brine extraction pulls water from beneath the salt flats in one of the world's driest places, consuming 2 million liters of water per ton of lithium produced. Indigenous Atacameño communities have contested extraction for its impact on ancestral water sources. SQM and Albemarle dominate production; demand has doubled since 2020 due to EV and AI hardware growth.`,
+    source: 'Sources: CONICET; Amnesty International, "The Dark Side of Electric Cars" (2019)'
+  },
+  {
+    id: 'uyuni', layer: 'mine', name: 'Salar de Uyuni — Lithium Triangle',
+    geo: 'Potosí Department, Bolivia', lat: -20.134, lng: -67.489,
+    desc: `<strong>The world's largest salt flat sits above one of the largest lithium deposits on Earth.</strong> Bolivia nationalized its lithium industry and has struggled to develop it without foreign capital. The "Lithium Triangle" (Bolivia, Chile, Argentina) holds ~60% of global lithium reserves. Bolivia's nationalization was partly reversed after a 2019 coup; the political instability of lithium-rich nations is itself a function of global demand driven by AI and EV industries.`,
+    source: 'Sources: USGS Mineral Resources; Fabricant, "The Lithium Triangle" (2021)'
+  },
+  {
+    id: 'jujuy', layer: 'mine', name: 'Jujuy — Lithium Expansion',
+    geo: 'Jujuy Province, Argentina', lat: -23.365, lng: -65.597,
+    desc: `<strong>Jujuy is experiencing rapid lithium expansion under pressure from global EV and AI hardware demand.</strong> In 2023, indigenous Kolla communities blocked roads for weeks, demanding recognition of land rights before mining proceeded. The provincial government signed lithium deals without prior indigenous consultation, violating ILO Convention 169. Lithium mining here expands while the communities above the deposits remain among Argentina's poorest.`,
+    source: 'Sources: Rest of World, "The Lithium Wars" (2023); ILO Convention 169'
+  },
+  {
+    id: 'baotou', layer: 'mine', name: 'Baotou — Rare Earth Processing',
+    geo: 'Baotou, Inner Mongolia, China', lat: 40.656, lng: 109.836,
+    desc: `<strong>Baotou is the world capital of rare earth mineral processing.</strong> China controls ~60% of rare earth mining and ~85% of processing globally. Rare earths are essential for AI chips, hard drives, speakers, and sensors. The Baogang smelting complex produces an artificial lake of toxic waste, covering roughly 10 square kilometers—one of the most polluted sites on Earth. The lake is not included in official discussions of AI's environmental footprint.`,
+    source: 'Sources: BBC, "The dystopian lake filled by the world's tech lust" (2015); USGS'
+  },
+  {
+    id: 'kachin', layer: 'mine', name: 'Kachin State — Rare Earth Mining',
+    geo: 'Kachin State, Myanmar', lat: 25.300, lng: 97.400,
+    desc: `<strong>Myanmar has emerged as a critical rare earth supplier, particularly heavy rare earths for AI hardware magnets.</strong> Mining in Kachin operates in a conflict zone controlled by ethnic armed groups, largely outside regulatory oversight. Satellite imagery shows rapid deforestation. Environmental damage—acid drainage, river contamination—is poorly documented. This is one of the most invisible nodes in AI's supply chain, deliberately so: few companies trace their rare earths to source.`,
+    source: 'Sources: Global Witness, "Rare and Costly" (2023); Reuters investigative'
+  },
+
+  // ══ LABOR & MODERATION ══════════════════════════════════════════════════
+  {
+    id: 'manila', layer: 'labor', name: 'Manila — Content Moderation Hub',
+    geo: 'Metro Manila, Philippines', lat: 14.600, lng: 120.984,
+    desc: `<strong>Manila is the global center of content moderation.</strong> Tens of thousands of Filipinos are employed by outsourcing firms—Appen, Accenture, Teleperformance—to review graphic content for US platforms including Facebook, TikTok, and YouTube. Moderators review child abuse material, beheadings, and suicide videos for wages of $1–4/hour, with minimal psychological support. A 2023 TIME investigation documented widespread PTSD among Meta's Filipino moderators. Moderators have begun organizing, with limited success.`,
+    source: 'Sources: TIME, "Facebook\'s Invisible Workforce" (2023); Perrigo, Rest of World'
+  },
+  {
+    id: 'nairobi', layer: 'labor', name: 'Nairobi — OpenAI Data Labeling',
+    geo: 'Nairobi, Kenya', lat: -1.292, lng: 36.822,
+    desc: `<strong>Nairobi hosts one of the most documented cases of AI's invisible labor.</strong> Sama, contracted by OpenAI, employed Kenyan workers at ~$2/hour to review and label content depicting child sexual abuse, bestiality, and graphic violence—content required to train ChatGPT's safety systems. Workers reported severe psychological trauma and no access to mental health support. A 2023 TIME investigation exposed these conditions; Sama subsequently ended its OpenAI contract. Workers later filed a case against Meta in Kenyan court.`,
+    source: 'Sources: TIME, "OpenAI Used Kenyan Workers" (2023); Amnesty International'
+  },
+  {
+    id: 'hyderabad', layer: 'labor', name: 'Hyderabad — AI Training Data',
+    geo: 'Hyderabad, Telangana, India', lat: 17.385, lng: 78.487,
+    desc: `<strong>Hyderabad hosts a major AI data labeling and training industry</strong>, with thousands of workers employed to annotate images, transcribe audio, and label datasets for US AI companies. Workers in this sector earn more than content moderators in East Africa but a fraction of what equivalent cognitive work pays in the United States. The geographic and wage arbitrage is not incidental—it is the business model. AI companies describe this workforce as "vendors," creating distance from labor obligations.`,
+    source: 'Sources: AI Now Institute, "Discriminating Systems" (2019); Ghost Work, Gray & Suri (2019)'
+  },
+  {
+    id: 'bengaluru', layer: 'labor', name: 'Bengaluru — AI Services & Labor',
+    geo: 'Bengaluru, Karnataka, India', lat: 12.972, lng: 77.595,
+    desc: `<strong>Bengaluru (Bangalore) hosts both skilled AI services workers and a growing data annotation industry.</strong> It represents an intermediate layer: workers are better compensated than data labelers in Kenya or the Philippines, but still economically subordinate to US AI companies that set task requirements, prices, and platform terms. The city also hosts growing Indian AI startups attempting to move up the value chain. India's AI industry is one of the most complex examples of dependency and emergence in global AI geography.`,
+    source: 'Sources: NASSCOM AI Report 2023; Rest of World, India AI coverage'
+  },
+  {
+    id: 'caracas', layer: 'labor', name: 'Venezuela — Distributed Micro-Work',
+    geo: 'Caracas, Venezuela', lat: 10.481, lng: -66.904,
+    desc: `<strong>Venezuelan workers are a significant but rarely acknowledged presence in global AI micro-work platforms</strong>, including Amazon Mechanical Turk, Appen, and various data labeling services. Economic collapse has made low-dollar online tasks economically rational for educated Venezuelans: a $10 daily earning from image annotation exceeds the minimum wage. The economic desperation that makes this labor pool available is invisible to end users of AI systems. This location is rarely included in maps of AI labor—which is itself data.`,
+    source: 'Sources: MIT Technology Review, "The Pandemic Has Pushed Venezuelan Refugees Into AI Work" (2021)'
+  }
+];
+
+// ─── Map Setup ────────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [20, 10],
+  zoom: 2,
+  zoomControl: true,
+  attributionControl: true
+});
+
+// Dark basemap
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+// Layer colors
+const COLORS = { hq: '#5ba3f5', dc: '#4ade80', mine: '#f97316', labor: '#c084fc' };
+const LAYER_LABELS = {
+  hq:    'Corporate HQ',
+  dc:    'Data Center',
+  mine:  'Mining Site',
+  labor: 'Labor / Moderation'
+};
+
+// Leaflet layer groups
+const layerGroups = { hq: L.layerGroup(), dc: L.layerGroup(), mine: L.layerGroup(), labor: L.layerGroup() };
+const layerVisible = { hq: true, dc: true, mine: true, labor: true };
+
+// ─── Create markers ───────────────────────────────────────────────────────────
+LOCATIONS.forEach(loc => {
+  const color = COLORS[loc.layer];
+  const size = loc.layer === 'hq' ? 14 : 11;
+
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="custom-marker ${loc.layer === 'mine' ? 'pulse' : ''}"
+      style="width:${size}px;height:${size}px;background:${color};opacity:0.9"></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size/2, size/2],
+    popupAnchor: [0, -size]
+  });
+
+  const marker = L.marker([loc.lat, loc.lng], { icon })
+    .bindPopup(`
+      <div class="pop-tag" style="color:${color}">${LAYER_LABELS[loc.layer]}</div>
+      <h3>${loc.name}</h3>
+      <p style="font-size:0.72rem;color:#777;margin:2px 0 6px">${loc.geo}</p>
+      <p>${loc.desc.substring(0, 140).replace(/<[^>]*>/g,'')}…</p>
+      <p class="pop-cta">← Click marker · See full details in sidebar</p>
+    `, { maxWidth: 300 })
+    .on('click', () => showLocation(loc));
+
+  layerGroups[loc.layer].addLayer(marker);
+});
+
+Object.values(layerGroups).forEach(g => g.addTo(map));
+
+// ─── Badge counts ─────────────────────────────────────────────────────────────
+['hq','dc','mine','labor'].forEach(l => {
+  const n = LOCATIONS.filter(x => x.layer === l).length;
+  document.getElementById(`cnt-${l}`).textContent = n;
+});
+
+// ─── Layer toggle ─────────────────────────────────────────────────────────────
+function toggleLayer(l) {
+  layerVisible[l] = !layerVisible[l];
+  if (layerVisible[l]) {
+    layerGroups[l].addTo(map);
+    document.getElementById(`btn-${l}`).classList.remove('inactive');
+  } else {
+    map.removeLayer(layerGroups[l]);
+    document.getElementById(`btn-${l}`).classList.add('inactive');
+  }
+}
+
+// ─── Sidebar info ─────────────────────────────────────────────────────────────
+function showLocation(loc) {
+  const color = COLORS[loc.layer];
+  document.getElementById('card-tag').textContent = LAYER_LABELS[loc.layer];
+  document.getElementById('card-tag').style.color = color;
+  document.getElementById('card-name').textContent = loc.name;
+  document.getElementById('card-geo').textContent = loc.geo;
+  document.getElementById('card-desc').innerHTML = loc.desc;
+  document.getElementById('card-source').textContent = loc.source;
+
+  document.getElementById('info-placeholder').style.display = 'none';
+  document.getElementById('location-card').classList.add('visible');
+}
+
+function showPlaceholder() {
+  document.getElementById('location-card').classList.remove('visible');
+  document.getElementById('info-placeholder').style.display = 'block';
+  map.closePopup();
+}
+</script>
+</body>
+</html>
