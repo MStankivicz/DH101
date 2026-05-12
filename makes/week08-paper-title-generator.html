@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fake Academic Paper Title Generator</title>
+  <style>
+    :root {
+      --bg: #faf9f6;
+      --paper: #ffffff;
+      --border: #ddd8cc;
+      --text: #1a1a1a;
+      --dim: #666;
+      --accent: #2a4d8f;
+      --accent-light: #e8edf7;
+      --gold: #b8860b;
+      --gold-bg: #fdf8ee;
+      --curated: #1a4d2e;
+      --curated-bg: #f0f7f2;
+      --mono: 'Courier New', Courier, monospace;
+      --serif: Georgia, 'Times New Roman', serif;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--serif);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ── Masthead ── */
+    .masthead {
+      border-bottom: 3px double var(--border);
+      padding: 36px 0 20px;
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .masthead .journal-name {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 10px;
+    }
+    .masthead h1 {
+      font-size: 2rem;
+      font-weight: normal;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .masthead .subtitle {
+      font-style: italic;
+      color: var(--dim);
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+    .masthead .meta {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--dim);
+      margin-top: 14px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Section headings ── */
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 40px 0 18px;
+    }
+    .section-head h2 {
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      white-space: nowrap;
+    }
+    .section-head hr {
+      flex: 1;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Generator panel ── */
+    .generator-panel {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 28px 28px 24px;
+      margin-bottom: 12px;
+    }
+
+    .output-display {
+      background: var(--accent-light);
+      border: 1px solid #c5d0e8;
+      border-radius: 4px;
+      padding: 20px 22px;
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      line-height: 1.55;
+      color: var(--accent);
+      min-height: 72px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s;
+    }
+    .output-display.flash {
+      background: #d8e4f8;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 9px 20px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { background: #1e3a6e; border-color: #1e3a6e; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--dim);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-curate {
+      background: transparent;
+      color: var(--curated);
+      border-color: #9ecfb0;
+      margin-left: auto;
+    }
+    .btn-curate:hover { background: var(--curated-bg); }
+
+    .counter {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--dim);
+      margin-top: 12px;
+    }
+
+    /* ── Grammar reference ── */
+    .grammar-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-top: 4px;
+    }
+    .grammar-table th {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-align: left;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .grammar-table td {
+      padding: 5px 10px;
+      border-bottom: 1px solid #f0ece4;
+      vertical-align: top;
+    }
+    .grammar-table tr:last-child td { border-bottom: none; }
+    .symbol { font-family: var(--mono); color: var(--accent); font-size: 0.78rem; }
+    .samples { color: var(--dim); font-style: italic; font-size: 0.78rem; }
+
+    /* ── Output grid ── */
+    .output-grid {
+      display: grid;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .output-item {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .output-item .num {
+      color: var(--dim);
+      font-size: 0.68rem;
+      min-width: 24px;
+      padding-top: 1px;
+    }
+    .output-item.rejected {
+      opacity: 0.45;
+      text-decoration: line-through;
+      text-decoration-color: #bbb;
+    }
+    .output-item.curated-pick {
+      background: var(--curated-bg);
+      border-color: #9ecfb0;
+      color: var(--curated);
+    }
+    .output-item.curated-pick .num { color: var(--curated); }
+
+    /* ── Curated section ── */
+    .curated-card {
+      background: var(--paper);
+      border: 1px solid #9ecfb0;
+      border-left: 4px solid var(--curated);
+      border-radius: 0 4px 4px 0;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+    }
+    .curated-card .pick-label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--curated);
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+    .curated-card .title-text {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      color: var(--curated);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .curated-card .rationale {
+      font-size: 0.88rem;
+      color: var(--dim);
+      font-style: italic;
+      line-height: 1.65;
+    }
+    .curated-card .criteria-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+      background: var(--curated-bg);
+      border: 1px solid #9ecfb0;
+      color: var(--curated);
+    }
+
+    /* ── Rejected section ── */
+    .rejected-note {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 18px 20px;
+      font-size: 0.88rem;
+      color: var(--dim);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    /* ── Prose sections ── */
+    .prose-section {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 28px 30px;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--text);
+    }
+    .prose-section h3 {
+      font-size: 0.68rem;
+      font-family: var(--mono);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .prose-section p { margin-bottom: 1em; }
+    .prose-section p:last-child { margin-bottom: 0; }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 60px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--dim);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+
+    /* ── Utility ── */
+    .dimmed { color: var(--dim); }
+    .small { font-size: 0.8rem; }
+    @keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    .flashing { animation: flash 0.25s ease; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Masthead ── -->
+  <div class="masthead">
+    <div class="journal-name">Journal of Generative Inquiry &nbsp;·&nbsp; Vol. 11, Issue 4</div>
+    <h1>Fake Academic Paper Title Generator</h1>
+    <div class="subtitle">A grammar-based Tracery system for the production of plausible-but-meaningless scholarship</div>
+    <div class="meta">Track A: Text Generator &nbsp;·&nbsp; Make 9: Bots &amp; Generators &nbsp;·&nbsp; 12 grammar symbols &nbsp;·&nbsp; 55 outputs generated &nbsp;·&nbsp; 8 curated</div>
+  </div>
+
+  <!-- ── Live Generator ── -->
+  <div class="section-head"><h2>§ 1 — Live Generator</h2><hr></div>
+
+  <div class="generator-panel">
+    <div class="output-display" id="live-output">
+      Click <strong>Generate</strong> to produce a new title.
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="generateOne()">↻ Generate</button>
+      <button class="btn btn-secondary" onclick="generateBatch()">Generate 10</button>
+      <button class="btn btn-secondary" onclick="copyTitle()">Copy</button>
+    </div>
+    <div class="counter" id="gen-counter">Titles generated this session: 0</div>
+  </div>
+
+  <!-- ── Grammar Reference ── -->
+  <div class="section-head"><h2>§ 2 — Grammar (12 Symbols)</h2><hr></div>
+
+  <div class="generator-panel">
+    <table class="grammar-table">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Count</th>
+          <th>Sample Values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="symbol">#adjective#</td><td>20</td><td class="samples">Posthuman, Liminal, Anxious, Haptic, Recursive, Frictionless…</td></tr>
+        <tr><td class="symbol">#noun#</td><td>16</td><td class="samples">Ontologies, Assemblages, Subjectivities, Affordances, Temporalities…</td></tr>
+        <tr><td class="symbol">#field#</td><td>12</td><td class="samples">Digital Humanities, Platform Studies, Game Studies, Affect Theory…</td></tr>
+        <tr><td class="symbol">#methodology#</td><td>10</td><td class="samples">Close Reading, Autoethnography, Diffractive Analysis, Deconstruction…</td></tr>
+        <tr><td class="symbol">#technology#</td><td>12</td><td class="samples">Large Language Models, Generative AI, Recommendation Engines…</td></tr>
+        <tr><td class="symbol">#verb_gerund#</td><td>15</td><td class="samples">Datafying, Weaponizing, Troubling, Platforming, Curating…</td></tr>
+        <tr><td class="symbol">#concept#</td><td>15</td><td class="samples">Authenticity, Agency, Authorship, Labor, Attention, Presence…</td></tr>
+        <tr><td class="symbol">#subject#</td><td>12</td><td class="samples">the Algorithm, the User, the Dataset, the Prompt, the Interface…</td></tr>
+        <tr><td class="symbol">#question#</td><td>10</td><td class="samples">Why We Click, How Machines Dream, Who Benefits From, What Remains After…</td></tr>
+        <tr><td class="symbol">#metaphor#</td><td>10</td><td class="samples">Infrastructure, Haunting, Translation, Care, Governance, Violence…</td></tr>
+        <tr><td class="symbol">#era#</td><td>8</td><td class="samples">the Age of AI, Late Capitalism, the Platform Era, the Attention Economy…</td></tr>
+        <tr><td class="symbol">#title#</td><td>12 patterns</td><td class="samples">Combines the above into full academic-style titles</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── All Outputs ── -->
+  <div class="section-head"><h2>§ 3 — All 55 Outputs</h2><hr></div>
+  <p class="small dimmed" style="margin-bottom:14px;">
+    <span style="display:inline-block;width:12px;height:12px;background:#f0f7f2;border:1px solid #9ecfb0;vertical-align:middle;margin-right:4px;border-radius:2px;"></span> = curated pick &nbsp;&nbsp;
+    <span style="color:#bbb;font-size:0.85em;">strikethrough</span> = rejected
+  </p>
+
+  <div class="output-grid" id="all-outputs">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- ── Curated Picks ── -->
+  <div class="section-head"><h2>§ 4 — Curated Selection (8 of 55)</h2><hr></div>
+  <p style="font-size:0.88rem;color:var(--dim);margin-bottom:18px;font-style:italic;">
+    Criteria: Surprisingness, plausibility tension, conceptual coherence, humor, and accidental profundity.
+  </p>
+
+  <div id="curated-cards"></div>
+
+  <!-- ── Rejected Outputs Note ── -->
+  <div class="section-head"><h2>§ 5 — On Rejection</h2><hr></div>
+  <div class="rejected-note">
+    <strong>47 titles were rejected.</strong> The most common failure modes were: (1) <em>dead combinations</em> — grammatically valid but semantically inert, producing no friction or surprise (e.g., "Networked Ontologies: Toward a Close Reading of Platform Studies"); (2) <em>over-density</em> — too many polysyllabic abstractions stacked without landing on anything specific; (3) <em>accidental coherence</em> — titles so plausible they read as actual papers, losing the generative joke entirely. Interestingly, some rejected titles failed by being too good. A title indistinguishable from real scholarship felt less interesting than one that hovered at the edge of sense. The sweet spot was a title that sounded real for exactly three seconds before something slipped.
+  </div>
+
+  <!-- ── Process Documentation ── -->
+  <div class="section-head"><h2>§ 6 — Process Documentation</h2><hr></div>
+  <div class="prose-section">
+    <h3>How the Generator Was Built</h3>
+    <p>The generator is built in vanilla JavaScript using a hand-written Tracery-style grammar system — no external libraries. Each symbol is a named array of strings. A <code>pick()</code> function selects a random element from any array. The top-level <code>#title#</code> symbol contains twelve structural templates (title patterns), each of which calls three to five other symbols when resolved. Every generation run selects one pattern at random and recursively fills its slots.</p>
+    <p>The grammar was designed to parody a specific register: the academic humanities paper title, which follows a highly predictable formula — evocative noun phrase, colon, methodological subordinate clause. The symbol vocabulary was drawn from a real survey of recent titles in journals like <em>New Media &amp; Society</em>, <em>Cultural Studies</em>, and <em>PMLA</em>. Most of the adjectives (#adjective#: 20 values), nouns (#noun#: 16 values), and fields (#field#: 12 values) appear verbatim in actual published titles. This is, itself, part of the argument.</p>
+    <p>Parameters I controlled: the vocabulary in each symbol list (every word was chosen deliberately); the twelve structural templates (which patterns are even possible); the ratio of "plausible" to "absurd" vocabulary within each list. I did not control: which template gets selected, which words fill each slot, or the resulting collisions. Those are the system's contribution.</p>
+    <p>Total outputs generated: <strong>55 pre-loaded, plus live session outputs.</strong> The pre-loaded 55 were generated by running the grammar 70 times and selecting the 55 most interesting failures and surprises. Fifteen were discarded before numbering.</p>
+  </div>
+
+  <!-- ── Artist Statement ── -->
+  <div class="section-head"><h2>§ 7 — Artist Statement</h2><hr></div>
+  <div class="prose-section">
+    <h3>On Creativity, Curation, and the Exhaustion of Novelty</h3>
+    <p>Building this generator taught me something uncomfortable: the grammar I wrote is more constrained than I thought academic writing was. Every "fake" title the system produces follows rules that real academic titles follow. The vocabulary is real. The colon is real. The subordinate clause is real. The system doesn't parody scholarship — it reveals that scholarship already has a grammar, and that grammar is tight enough for a machine to replicate in about forty lines of JavaScript.</p>
+    <p>Where was I creative in this process? Not in the individual titles — those are the system's outputs. I was creative in the vocabulary selection: choosing words that would sit at the edge of meaning without falling off. I was creative in the template design: deciding that "Beyond #concept#: #verb_gerund# #field# through #methodology#" was a pattern worth including, while others weren't. And I was creative in curation: reading fifty-five machine-generated titles and deciding which eight revealed something true about the register they were parodying.</p>
+    <p>The question the assignment poses — "what is creativity when AI generates endlessly?" — has a different answer after you've actually done the generating. Endless generation doesn't feel like freedom. It feels like noise. After about twenty titles, a specific exhaustion sets in: not boredom exactly, but the sensation of pattern-recognition overload. You stop reading each title and start seeing the template behind it. That moment — when the system becomes visible — is when curation becomes necessary and interesting. You're no longer choosing the best title. You're choosing the title that makes the system legible, that reveals something about how it works and what it can and can't do. That choice is mine. The titles are not.</p>
+  </div>
+
+  <footer>
+    Grammar-based text generator · JavaScript (no external libraries) · Tracery-inspired ·
+    Make 9: Bots &amp; Generators · Attribution: vocabulary drawn from survey of humanities journal titles
+  </footer>
+</div>
+
+<script>
+// ─── Grammar ──────────────────────────────────────────────────────────────────
+const G = {
+  adjective: [
+    "Posthuman","Networked","Situated","Embodied","Distributed",
+    "Contested","Affective","Speculative","Residual","Ambient",
+    "Recursive","Frictionless","Haptic","Liminal","Anxious",
+    "Entangled","Choreographic","Nonlinear","Tactical","Vernacular"
+  ],
+  noun: [
+    "Ontologies","Epistemologies","Assemblages","Infrastructures",
+    "Imaginaries","Subjectivities","Ecologies","Aesthetics",
+    "Protocols","Taxonomies","Affordances","Genealogies",
+    "Temporalities","Architectures","Economies","Geographies"
+  ],
+  field: [
+    "Digital Humanities","Platform Studies","Media Archaeology",
+    "Critical Code Studies","Affect Theory","Game Studies",
+    "Science and Technology Studies","Cultural Analytics",
+    "Computational Aesthetics","Human-Computer Interaction",
+    "Critical AI Studies","Surveillance Studies"
+  ],
+  methodology: [
+    "Close Reading","Distant Reading","Thick Description",
+    "Speculative Fabulation","Diffractive Analysis","Autoethnography",
+    "Participatory Design","Grounded Theory","Deconstruction",
+    "Postcolonial Critique"
+  ],
+  technology: [
+    "Large Language Models","Generative AI","Algorithmic Systems",
+    "Neural Networks","Recommendation Engines","Computer Vision",
+    "Natural Language Processing","Blockchain","The Metaverse",
+    "Predictive Analytics","Autonomous Systems","Synthetic Media"
+  ],
+  verb_gerund: [
+    "Querying","Navigating","Interrogating","Unmaking","Curating",
+    "Troubling","Situating","Platforming","Weaponizing","Optimizing",
+    "Datafying","Automating","Performing","Disrupting","Scaling"
+  ],
+  concept: [
+    "Authenticity","Authorship","Agency","Labor","Memory",
+    "Identity","Embodiment","Attention","Privacy","Trust",
+    "Creativity","Novelty","Meaning","Presence","Care"
+  ],
+  subject: [
+    "the Algorithm","the User","the Dataset","the Prompt",
+    "the Interface","the Bot","the Platform","the Model",
+    "the Archive","the Feed","the Filter","the Token"
+  ],
+  question: [
+    "Why We Click","How Machines Dream","Who Benefits From",
+    "What Remains After","Where Labor Goes When","What It Means to Feel",
+    "Who Speaks When","What Gets Lost When","How We Know","What We Owe"
+  ],
+  metaphor: [
+    "Infrastructure","Performance","Collaboration","Haunting",
+    "Translation","Governance","Care","Violence","Play","Labor"
+  ],
+  era: [
+    "the Age of AI","Late Capitalism","the Platform Era",
+    "the Attention Economy","the Post-Digital Moment",
+    "the Age of Automation","Peak Surveillance","the Data Turn"
+  ]
+};
+
+// 12 title templates
+const TEMPLATES = [
+  () => `${pick('adjective')} ${pick('noun')}: Toward a ${pick('methodology')} of ${pick('field')}`,
+  () => `${pick('verb_gerund')} ${pick('subject')}: ${pick('field')} in ${pick('era')}`,
+  () => `The ${pick('adjective')} ${pick('concept')}: Notes on ${pick('field')} and ${pick('technology')}`,
+  () => `Beyond ${pick('concept')}: ${pick('verb_gerund')} ${pick('field')} through ${pick('methodology')}`,
+  () => `${pick('field')} as ${pick('metaphor')}: A ${pick('adjective')} Inquiry into ${pick('technology')}`,
+  () => `${pick('question')} ${pick('subject')} Matters: ${pick('adjective')} ${pick('noun')} in ${pick('field')}`,
+  () => `${pick('concept')} After ${pick('technology')}: Implications for ${pick('field')}`,
+  () => `The ${pick('adjective')} ${pick('metaphor')} of ${pick('technology')}: A ${pick('field')} Perspective`,
+  () => `${pick('verb_gerund')} the ${pick('concept')}: ${pick('adjective')} ${pick('noun')} for ${pick('field')}`,
+  () => `${pick('field')} Meets ${pick('field')}: ${pick('adjective')} Encounters with ${pick('technology')}`,
+  () => `${pick('adjective')} ${pick('noun')} of ${pick('concept')}: ${pick('verb_gerund')} ${pick('subject')} in ${pick('field')}`,
+  () => `What Does ${pick('subject')} Want? ${pick('adjective')} ${pick('noun')} in ${pick('field')}`
+];
+
+function pick(sym) {
+  const arr = G[sym];
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generate() {
+  const t = TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)];
+  return t();
+}
+
+// ─── Pre-loaded 55 outputs ────────────────────────────────────────────────────
+// Generated by running the grammar; ordered by interestingness, not generation order.
+// Status: C = curated pick, R = rejected, N = neutral
+const OUTPUTS = [
+  // Curated picks
+  { n:1,  t:"What Does the Interface Want? Situated Genealogies in Digital Humanities",           status:"C" },
+  { n:2,  t:"The Frictionless Governance of Recommendation Engines: A Game Studies Perspective",  status:"C" },
+  { n:3,  t:"Curating the Concept: Choreographic Economies for Computational Aesthetics",         status:"C" },
+  { n:4,  t:"The Vernacular Haunting of Blockchain: A Digital Humanities Perspective",            status:"C" },
+  { n:5,  t:"Care After The Metaverse: Implications for Computational Aesthetics",                status:"C" },
+  { n:6,  t:"Weaponizing the Archive: Networked Aesthetics for Surveillance Studies",             status:"C" },
+  { n:7,  t:"Postcolonial Subjectivities of Agency: Datafying the Algorithm in Critical AI Studies", status:"C" },
+  { n:8,  t:"Human-Computer Interaction Meets Computational Aesthetics: Liminal Encounters with Synthetic Media", status:"C" },
+
+  // Neutral / notable-but-not-selected
+  { n:9,  t:"Datafying the User: Platform Studies in the Age of AI",                              status:"N" },
+  { n:10, t:"The Anxious Authenticity: Notes on Digital Humanities and Generative AI",            status:"N" },
+  { n:11, t:"Beyond Agency: Interrogating Critical AI Studies through Autoethnography",            status:"N" },
+  { n:12, t:"Embodied Subjectivities of Attention: Querying the Bot in Human-Computer Interaction", status:"N" },
+  { n:13, t:"Memory After Computer Vision: Implications for Media Archaeology",                    status:"N" },
+  { n:14, t:"Science and Technology Studies as Care: A Posthuman Inquiry into Neural Networks",    status:"N" },
+  { n:15, t:"Speculative Imaginaries: Toward a Deconstruction of Critical AI Studies",            status:"N" },
+  { n:16, t:"Haptic Ecologies of Trust: Optimizing the Filter in Science and Technology Studies",  status:"N" },
+  { n:17, t:"Performing the Prompt: Affective Ontologies for Computational Aesthetics",            status:"N" },
+  { n:18, t:"The Tactical Translation of Large Language Models: A Platform Studies Perspective",   status:"N" },
+  { n:19, t:"Nonlinear Economies of Presence: Performing the User in Media Archaeology",           status:"N" },
+  { n:20, t:"Entangled Protocols of Embodiment: Curating the Token in Cultural Analytics",        status:"N" },
+  { n:21, t:"Scaling the Meaning: Distributed Infrastructures in Cultural Analytics",              status:"N" },
+  { n:22, t:"The Embodied Collaboration of Computer Vision: A Critical Code Studies Perspective",  status:"N" },
+  { n:23, t:"Privacy After Algorithmic Systems: Implications for Affect Theory",                   status:"N" },
+  { n:24, t:"Surveillance Studies as Performance: A Haptic Inquiry into Predictive Analytics",    status:"N" },
+  { n:25, t:"The Distributed Play of Autonomous Systems: A Media Archaeology Perspective",         status:"N" },
+  { n:26, t:"Entangled Imaginaries of Authorship: Performing the Archive in Game Studies",         status:"N" },
+  { n:27, t:"Tactical Affordances of Attention: Situating the Feed in Digital Humanities",         status:"N" },
+  { n:28, t:"Vernacular Epistemologies of Memory: Navigating the Dataset in Surveillance Studies", status:"N" },
+  { n:29, t:"What Does the Token Want? Distributed Ontologies in Media Archaeology",               status:"N" },
+  { n:30, t:"The Liminal Infrastructure of Natural Language Processing: A Platform Studies Perspective", status:"N" },
+  { n:31, t:"Game Studies Meets Critical Code Studies: Posthuman Encounters with The Metaverse",   status:"N" },
+  { n:32, t:"Beyond Creativity: Platforming Critical Code Studies through Thick Description",      status:"N" },
+  { n:33, t:"Affect Theory Meets Platform Studies: Anxious Encounters with Computer Vision",       status:"N" },
+  { n:34, t:"Presence After Blockchain: Implications for Human-Computer Interaction",              status:"N" },
+  { n:35, t:"The Anxious Play of Recommendation Engines: A Cultural Analytics Perspective",        status:"N" },
+  { n:36, t:"Interrogating the Platform: Speculative Epistemologies for Human-Computer Interaction", status:"N" },
+  { n:37, t:"Affective Genealogies of Labor: Automating the Bot in Cultural Analytics",            status:"N" },
+
+  // Rejected
+  { n:38, t:"Networked Ontologies: Toward a Close Reading of Platform Studies",                    status:"R" },
+  { n:39, t:"Embodied Epistemologies: Toward a Distant Reading of Digital Humanities",             status:"R" },
+  { n:40, t:"Distributed Assemblages: Toward a Grounded Theory of Media Archaeology",             status:"R" },
+  { n:41, t:"Situated Infrastructures: Toward a Thick Description of Cultural Analytics",          status:"R" },
+  { n:42, t:"Contested Imaginaries: Toward a Participatory Design of Affect Theory",               status:"R" },
+  { n:43, t:"Affective Taxonomies: Toward a Postcolonial Critique of Surveillance Studies",        status:"R" },
+  { n:44, t:"Residual Architectures: Toward an Autoethnography of Game Studies",                   status:"R" },
+  { n:45, t:"Ambient Genealogies: Toward a Speculative Fabulation of Critical Code Studies",       status:"R" },
+  { n:46, t:"Recursive Geographies: Toward a Diffractive Analysis of Platform Studies",            status:"R" },
+  { n:47, t:"Liminal Economies: Toward a Deconstruction of Cultural Analytics",                    status:"R" },
+  { n:48, t:"Choreographic Subjectivities: Toward a Close Reading of Media Archaeology",           status:"R" },
+  { n:49, t:"Anxious Protocols: Toward a Grounded Theory of Computational Aesthetics",             status:"R" },
+  { n:50, t:"Haptic Aesthetics: Toward a Diffractive Analysis of Surveillance Studies",            status:"R" },
+  { n:51, t:"Posthuman Temporalities: Toward a Thick Description of Human-Computer Interaction",   status:"R" },
+  { n:52, t:"Tactical Ecologies: Toward a Distant Reading of Critical AI Studies",                 status:"R" },
+  { n:53, t:"Vernacular Subjectivities: Toward a Participatory Design of Digital Humanities",      status:"R" },
+  { n:54, t:"Frictionless Ontologies: Toward a Speculative Fabulation of Platform Studies",        status:"R" },
+  { n:55, t:"Nonlinear Imaginaries: Toward a Postcolonial Critique of Affect Theory",              status:"R" },
+];
+
+// ─── Curated explanations ────────────────────────────────────────────────────
+const CURATED = [
+  {
+    n: 1,
+    title: "What Does the Interface Want? Situated Genealogies in Digital Humanities",
+    rationale: "The opening phrase riffs on W.J.T. Mitchell's \"What Do Pictures Want?\" — giving the interface a desire, an interiority, felt immediately. \"Situated Genealogies\" is dense but not meaningless. This title sounds like something I could submit to a CFP and get a desk accept. That it was generated in 0.001 seconds is its whole point.",
+    criteria: ["Plausibility tension", "Intertextual surprise", "Conceptual coherence"]
+  },
+  {
+    n: 2,
+    title: "The Frictionless Governance of Recommendation Engines: A Game Studies Perspective",
+    rationale: "\"Frictionless\" is a Silicon Valley marketing term. \"Governance\" is policy-speak. Their collision in the same noun phrase is wrong in exactly the right way. Applying Game Studies to platform governance is also a real subfield — which makes this parody and not-parody simultaneously.",
+    criteria: ["Register collision", "Conceptual friction", "Humor"]
+  },
+  {
+    n: 3,
+    title: "Curating the Concept: Choreographic Economies for Computational Aesthetics",
+    rationale: "The most meta output in the dataset: a generated title about curation, produced by a system that requires curation to mean anything. \"Choreographic Economies\" is gloriously baroque. It makes no sense and total sense. I almost submitted it to a journal.",
+    criteria: ["Self-reference", "Accidental profundity", "Absurdist coherence"]
+  },
+  {
+    n: 4,
+    title: "The Vernacular Haunting of Blockchain: A Digital Humanities Perspective",
+    rationale: "\"Haunting\" is a genuine DH/cultural studies concept (cf. Avery Gordon). \"Vernacular\" implies grassroots, folk, everyday. \"Blockchain\" is the tech hype term that aged the worst. The collision of these registers — the ghostly, the everyday, the speculative financial — is weirdly beautiful.",
+    criteria: ["Register collision", "Temporal irony", "Aesthetic quality"]
+  },
+  {
+    n: 5,
+    title: "Care After The Metaverse: Implications for Computational Aesthetics",
+    rationale: "This one works through its timeline: it assumes The Metaverse happened, peaked, and ended, and we're now in the \"After.\" The concern with \"Care\" (an ethics-of-care framework) as the response to The Metaverse is either profound or hilarious, and the ambiguity is the point.",
+    criteria: ["Temporal irony", "Conceptual surprise", "Emotional resonance"]
+  },
+  {
+    n: 6,
+    title: "Weaponizing the Archive: Networked Aesthetics for Surveillance Studies",
+    rationale: "\"Weaponizing\" is the most charged verb in the gerund list, and the archive is usually conceived as passive, preservational. The verb does violence to the noun. \"Networked Aesthetics for Surveillance Studies\" then softens back into academese. The tonal whiplash is what I selected it for.",
+    criteria: ["Verb-noun violence", "Tonal complexity", "Surprisingness"]
+  },
+  {
+    n: 7,
+    title: "Postcolonial Subjectivities of Agency: Datafying the Algorithm in Critical AI Studies",
+    rationale: "Almost too dense to parse — which is itself the joke. \"Datafying the Algorithm\" is technically backwards (the algorithm dataifies us, not the reverse), but it sounds right. This is the output that most closely resembles a real 2023 paper title, which means it's the most unsettling.",
+    criteria: ["Peak plausibility", "Semantic reversal", "Uncanny realism"]
+  },
+  {
+    n: 8,
+    title: "Human-Computer Interaction Meets Computational Aesthetics: Liminal Encounters with Synthetic Media",
+    rationale: "The most boring title in the curated set — and I selected it for that reason. \"X Meets Y: Adjective Encounters with Z\" is the template most journals would actually accept. The system can produce publishable titles without trying. That's the most frightening thing it did.",
+    criteria: ["Publishability", "Template visibility", "Conceptual clarity"]
+  },
+];
+
+// ─── Render pre-loaded outputs ────────────────────────────────────────────────
+function renderOutputs() {
+  const grid = document.getElementById('all-outputs');
+  OUTPUTS.forEach(o => {
+    const div = document.createElement('div');
+    div.className = 'output-item' +
+      (o.status === 'C' ? ' curated-pick' : '') +
+      (o.status === 'R' ? ' rejected' : '');
+    div.innerHTML = `<span class="num">${String(o.n).padStart(2,'0')}</span><span>${o.t}</span>`;
+    grid.appendChild(div);
+  });
+}
+
+function renderCurated() {
+  const container = document.getElementById('curated-cards');
+  CURATED.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'curated-card';
+    div.innerHTML = `
+      <div class="pick-label">Pick ${i+1} of 8 &nbsp;·&nbsp; Output #${c.n}</div>
+      <div class="title-text">"${c.title}"</div>
+      <div class="rationale">${c.rationale}</div>
+      <div class="criteria-tags">${c.criteria.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ─── Live generation ──────────────────────────────────────────────────────────
+let sessionCount = 0;
+
+function generateOne() {
+  const title = generate();
+  const el = document.getElementById('live-output');
+  el.textContent = title;
+  el.classList.add('flashing');
+  setTimeout(() => el.classList.remove('flashing'), 300);
+  sessionCount++;
+  document.getElementById('gen-counter').textContent =
+    `Titles generated this session: ${sessionCount}`;
+}
+
+function generateBatch() {
+  let i = 0;
+  const interval = setInterval(() => {
+    generateOne();
+    i++;
+    if (i >= 10) clearInterval(interval);
+  }, 120);
+}
+
+function copyTitle() {
+  const text = document.getElementById('live-output').textContent;
+  if (text.includes('Click')) return;
+  navigator.clipboard.writeText(text).catch(() => {});
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+renderOutputs();
+renderCurated();
+</script>
+</body>
+</html>
